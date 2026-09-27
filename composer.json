@@ -1,9 +1,15 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "atsyscorp/petpulse",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "PetPulse — multi-tenant veterinary SaaS with a high-precision hospitalization & nursing kárdex.",
+    "keywords": [
+        "petpulse",
+        "veterinary",
+        "kardex",
+        "laravel",
+        "livewire"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.3",

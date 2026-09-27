@@ -1,4 +1,4 @@
-# Pet Pulse — Veterinary Hospitalization & Nursing Kárdex
+# PetPulse — Veterinary Hospitalization & Nursing Kárdex
 
 A multi-tenant SaaS for veterinary clinics in LATAM (primary compliance target: Colombia).
 Its core module is a **high-precision hospitalization kárdex**. It tracks fractional drug
