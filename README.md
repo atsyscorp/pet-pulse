@@ -11,10 +11,13 @@ nurses at once, with every ICU screen updated in real time.
 
 ## Quick start
 
+Requires PostgreSQL 14+ (the production engine; see *Decisions* below).
+
 ```bash
 composer install && npm install
 cp .env.example .env && php artisan key:generate
-touch database/database.sqlite && php artisan migrate --seed
+createdb petpulse                     # or set DB_* in .env to an existing server
+php artisan migrate --seed
 npm run build
 
 php artisan reverb:start      # terminal 1: WebSocket server
@@ -93,9 +96,11 @@ hospitalizations (SHARED) → kardex_schedules (FOR UPDATE) → drugs (FOR UPDAT
   the same order. That makes lock-order-inversion deadlocks structurally impossible.
   Leftover deadlocks from gap locks are retried by Laravel, which only retries concurrency errors.
 
-> SQLite, used in tests, ignores `FOR UPDATE`. Run production on MySQL 8 / PostgreSQL. The
-> idempotency and rollback behavior is covered by tests. True parallel contention needs a
-> MySQL or Postgres integration run (see *Next steps*).
+> **PostgreSQL is the production database.** Row locks (`FOR UPDATE`), exact `NUMERIC`
+> arithmetic and per-clinic scalability (partial indexes, `jsonb`, an optional move to
+> schema-per-tenant) all rely on it. The automated test suite runs on in-memory SQLite for
+> speed; SQLite ignores `FOR UPDATE`, so idempotency and rollback are covered by tests but true
+> parallel contention needs a PostgreSQL run (see *Next steps*).
 
 ### 4. Automatic unsealing, stability expiry and the ledger
 When the open balance is below the dose, packages are opened in a loop. For example, a 15 mL
@@ -141,6 +146,6 @@ clocks never disagree.
 ## Next steps (not in this iteration)
 * Omission workflow (`omitted` + mandatory reason) and dose reversal as a compensating ledger entry.
 * Prescription UI (a Form Request exists for administration only), with CRIs/infusions as a separate model.
-* MySQL/Postgres CI job with a parallel-process contention test for `lockForUpdate`.
+* PostgreSQL CI job with a parallel-process contention test for `lockForUpdate`.
 * Stock receiving/waste screens (the ledger already supports `package_received`, `waste`, `adjustment`).
 * Authentication scaffolding (Breeze/Fortify) to replace the local-only `/dev/login` helper.
