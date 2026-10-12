@@ -1,0 +1,18 @@
+# Queue worker for PetPulse.
+#   sudo cp deploy/systemd/petpulse-queue.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now petpulse-queue
+# After each deploy run: sudo systemctl restart petpulse-queue   (workers cache code)
+[Unit]
+Description=PetPulse queue worker
+After=network.target postgresql.service
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/petpulse
+ExecStart=/usr/bin/php artisan queue:work --tries=3 --max-time=3600 --sleep=1
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

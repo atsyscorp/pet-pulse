@@ -33,7 +33,7 @@ php artisan test              # 31 tests
 vendor/bin/pint --test        # code style
 ```
 
-**Production deployment** (Docker on a VPS: Caddy + PHP-FPM + Reverb + PostgreSQL 16 + Redis): see [docs/DEPLOY.md](docs/DEPLOY.md).
+**Production deployment:** on a server that already has PostgreSQL, see [docs/DEPLOY-SERVIDOR.md](docs/DEPLOY-SERVIDOR.md) (Nginx + PHP-FPM + systemd, no Docker); with containers, see [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ---
 
