@@ -10,6 +10,7 @@ permissions:
   contents: read
 
 jobs:
+  # Fast feedback: code style + the suite on in-memory SQLite, across PHP versions.
   tests:
     runs-on: ubuntu-latest
 
@@ -18,7 +19,7 @@ jobs:
       matrix:
         php: [8.3, 8.4, 8.5]
 
-    name: PHP ${{ matrix.php }}
+    name: PHP ${{ matrix.php }} (SQLite)
 
     steps:
       - name: Checkout code
@@ -46,4 +47,66 @@ jobs:
         run: vendor/bin/pint --test
 
       - name: Execute tests
+        run: php artisan test
+
+  # PetPulse runs on PostgreSQL in production. This job runs the same suite
+  # against a real PostgreSQL server, which is the only place row locks
+  # (FOR UPDATE), NUMERIC(10,4) arithmetic and the migrations' DDL are
+  # exercised for real: in-memory SQLite silently ignores FOR UPDATE.
+  tests-postgres:
+    runs-on: ubuntu-latest
+
+    name: PHP 8.4 (PostgreSQL 16)
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: petpulse
+          POSTGRES_USER: petpulse
+          POSTGRES_PASSWORD: petpulse
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U petpulse"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # phpunit.xml's <env> entries do not override variables already set in
+      # the environment, so these win over its SQLite defaults.
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: petpulse
+      DB_USERNAME: petpulse
+      DB_PASSWORD: petpulse
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: 8.4
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pgsql, pdo_pgsql
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Generate app key
+        run: php artisan key:generate
+
+      - name: Run migrations and seeder against PostgreSQL
+        run: php artisan migrate:fresh --seed --force --no-interaction
+
+      - name: Execute tests against PostgreSQL
         run: php artisan test
