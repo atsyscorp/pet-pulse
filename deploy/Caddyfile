@@ -1,0 +1,45 @@
+# PetPulse edge server.
+#
+# Caddy obtains and renews the TLS certificate from Let's Encrypt automatically
+# for {$APP_DOMAIN}. HTTP is redirected to HTTPS.
+#
+#   /app/*  and /apps/*  → Reverb (WebSocket + its HTTP API)
+#   everything else      → PHP-FPM via FastCGI, static files served directly
+
+{
+    email {$ACME_EMAIL}
+}
+
+{$APP_DOMAIN} {
+    root * /var/www/html/public
+    encode zstd gzip
+
+    # Security headers appropriate for a clinical application.
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options nosniff
+        X-Frame-Options SAMEORIGIN
+        Referrer-Policy strict-origin-when-cross-origin
+        -Server
+    }
+
+    # Reverb: WebSocket connections (/app/{key}) and server-side publish API (/apps/*).
+    @reverb path /app/* /apps/*
+    reverse_proxy @reverb reverb:8080
+
+    # Long-lived cache for Vite-hashed assets.
+    @assets path /build/*
+    header @assets Cache-Control "public, max-age=31536000, immutable"
+
+    php_fastcgi app:9000 {
+        # Livewire uploads and slow reports.
+        read_timeout 120s
+    }
+
+    file_server
+
+    log {
+        output stdout
+        format console
+    }
+}

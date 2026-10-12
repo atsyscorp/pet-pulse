@@ -20,6 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['clinic' => IdentifyClinic::class]);
 
+        // In production the app sits behind Caddy (compose.yaml), which terminates
+        // TLS; trust it so url(), secure cookies and the /broadcasting/auth scheme
+        // reflect the public https:// origin.
+        $middleware->trustProxies(at: env('TRUSTED_PROXIES', '*'));
+
         // Tenant must be bound before implicit route-model binding runs.
         $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: IdentifyClinic::class);
     })

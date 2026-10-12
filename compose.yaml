@@ -1,0 +1,156 @@
+# PetPulse — production stack for a single VPS.
+#
+#   cp .env.production.example .env   # then fill in the CHANGE-ME values
+#   docker compose up -d --build
+#
+# Services:
+#   web        Caddy: TLS (Let's Encrypt), static files, FastCGI → app, WebSocket → reverb
+#   app        PHP-FPM (the only service that runs migrations on start)
+#   reverb     Laravel Reverb WebSocket server (real-time kárdex)
+#   queue      Queue worker
+#   scheduler  Laravel scheduler (php artisan schedule:work)
+#   db         PostgreSQL 16 — the production database engine
+#   redis      Cache, sessions and queues
+#
+# Every service reads the .env file next to this file (see .env.production.example).
+
+name: petpulse
+
+# Internal addresses that must not be overridden by .env.
+x-app-env: &app-env
+  DB_HOST: db
+  REDIS_HOST: redis
+  # Server-side publishing goes straight to the reverb container; browsers reach
+  # Reverb through Caddy at wss://APP_DOMAIN/app/<key> (baked into the Vite build).
+  REVERB_HOST: reverb
+  REVERB_PORT: 8080
+  REVERB_SCHEME: http
+
+x-app: &app
+  image: petpulse/app:${APP_VERSION:-latest}
+  build:
+    context: .
+    target: app
+    args:
+      VITE_REVERB_APP_KEY: ${REVERB_APP_KEY}
+      VITE_REVERB_HOST: ${APP_DOMAIN}
+      VITE_REVERB_PORT: 443
+      VITE_REVERB_SCHEME: https
+  env_file: .env
+  volumes:
+    - storage:/var/www/html/storage/app
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "5" }
+
+services:
+  web:
+    image: petpulse/web:${APP_VERSION:-latest}
+    build:
+      context: .
+      target: web
+      args:
+        VITE_REVERB_APP_KEY: ${REVERB_APP_KEY}
+        VITE_REVERB_HOST: ${APP_DOMAIN}
+        VITE_REVERB_PORT: 443
+        VITE_REVERB_SCHEME: https
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+      reverb:
+        condition: service_started
+    restart: unless-stopped
+
+  app:
+    <<: *app
+    environment:
+      <<: *app-env
+      ROLE: web
+
+  reverb:
+    <<: *app
+    environment:
+      <<: *app-env
+      ROLE: reverb
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/up >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  queue:
+    <<: *app
+    environment:
+      <<: *app-env
+      ROLE: queue
+    command: ["php", "artisan", "queue:work", "--tries=3", "--max-time=3600", "--sleep=1"]
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'queue:work' >/dev/null || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+
+  scheduler:
+    <<: *app
+    environment:
+      <<: *app-env
+      ROLE: scheduler
+    command: ["php", "artisan", "schedule:work"]
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'schedule:work' >/dev/null || exit 1"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      TZ: America/Bogota
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
+  storage:
+  caddy_data:
+  caddy_config:

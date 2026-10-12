@@ -33,6 +33,8 @@ php artisan test              # 31 tests
 vendor/bin/pint --test        # code style
 ```
 
+**Production deployment** (Docker on a VPS: Caddy + PHP-FPM + Reverb + PostgreSQL 16 + Redis): see [docs/DEPLOY.md](docs/DEPLOY.md).
+
 ---
 
 ## Module map
