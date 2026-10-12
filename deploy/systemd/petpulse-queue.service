@@ -7,6 +7,8 @@ Description=PetPulse queue worker
 After=network.target postgresql.service
 
 [Service]
+# Virtualmin: use the virtual server's owner (the user PHP-FPM runs as), e.g.
+#   User=petpulse  Group=petpulse  WorkingDirectory=/home/petpulse/domains/<subdominio>/public_html
 User=www-data
 Group=www-data
 WorkingDirectory=/var/www/petpulse

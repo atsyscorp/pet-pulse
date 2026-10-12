@@ -11,6 +11,7 @@ Archivos del repositorio que se usan aquí:
 | `deploy/nginx/petpulse.conf` | Bloque de servidor de Nginx: PHP-FPM, estáticos y el WebSocket de Reverb. |
 | `deploy/systemd/petpulse-reverb.service` | Mantiene el servidor Reverb (tiempo real) siempre en marcha. |
 | `deploy/systemd/petpulse-queue.service` | Mantiene el trabajador de colas siempre en marcha. |
+| `deploy/apache/petpulse-virtualmin.conf` | Directivas de Apache para Virtualmin: proxy del WebSocket de Reverb. |
 | `deploy/deploy.sh` | Script de actualización: `git pull`, dependencias, assets, migraciones, cachés, reinicios. |
 
 ## 1. Requisitos en el servidor
@@ -206,17 +207,79 @@ permisos 600) y copie los volcados fuera del servidor.
 | Cookies o redirecciones a `http://` | `APP_URL` sin `https` o `SESSION_SECURE_COOKIE` ausente. |
 | "could not connect to server" (PostgreSQL) | `DB_HOST`/contraseña incorrectos o `pg_hba.conf` sin la línea para `127.0.0.1`. |
 
-### Nota sobre Apache / cPanel
+## Variante: Virtualmin con Apache
 
-Si el servidor usa Apache, el `.htaccess` de `public/` ya enruta a Laravel; falta el proxy
-del WebSocket. Con `mod_proxy_wstunnel` activado, añada al VirtualHost:
+Virtualmin funciona bien (da acceso root). Siga la guía anterior con estas diferencias:
 
-```apache
-ProxyPass        /app  ws://127.0.0.1:8080/app
-ProxyPassReverse /app  ws://127.0.0.1:8080/app
-ProxyPass        /apps http://127.0.0.1:8080/apps
-ProxyPassReverse /apps http://127.0.0.1:8080/apps
+**1. Crear el subdominio en Virtualmin.** *Create Virtual Server* → *Sub-server* con el
+nombre `petpulse.suclinica.com`, PHP 8.4 en modo **FPM**, y SSL con Let's Encrypt
+(*Server Configuration → SSL Certificate → Let's Encrypt*). Anote el **usuario** del
+servidor virtual (por ejemplo `petpulse`): PHP-FPM corre con ese usuario.
+
+**2. Ubicación del código.** Clone **dentro** de `public_html` y apunte la raíz del
+documento a `public/`:
+
+```bash
+sudo su - petpulse                      # el usuario del servidor virtual
+cd ~/domains/petpulse.suclinica.com/public_html   # (o ~/public_html si es dominio principal)
+git clone https://github.com/atsyscorp/pet-pulse.git .
+composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+npm ci --no-audit --no-fund
 ```
 
-En alojamientos compartidos (cPanel sin acceso root) no es posible mantener Reverb en
-marcha ni usar systemd: PetPulse necesita un VPS o servidor dedicado.
+Luego en Virtualmin: *Web Configuration → Website Options → Website documents
+sub-directory* = `public`. (Equivale a cambiar `DocumentRoot` a `.../public_html/public`.)
+
+**3. `.env`, assets y migraciones** igual que en los pasos 4 (como el usuario `petpulse`,
+no como root). Los permisos ya son correctos porque PHP-FPM corre con ese mismo usuario;
+no ejecute el `chown www-data`.
+
+**4. Apache: proxy del WebSocket.** Active los módulos y añada las directivas de
+`deploy/apache/petpulse-virtualmin.conf`:
+
+```bash
+sudo a2enmod proxy proxy_http proxy_wstunnel headers rewrite
+```
+
+En Virtualmin: *Web Configuration → Edit Apache Directives*, pegue el bloque `<IfModule
+mod_proxy.c>` **en las dos secciones** (puerto 80 y 443) y ajuste la ruta del `<Directory>`
+a su `public_html/public`. Guarde; Virtualmin recarga Apache.
+
+**5. Reverb y la cola con systemd.** En los dos archivos de `deploy/systemd/` cambie
+`User`, `Group` y `WorkingDirectory` al usuario y ruta de Virtualmin (las líneas
+comentadas muestran el ejemplo), luego:
+
+```bash
+sudo cp deploy/systemd/petpulse-*.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now petpulse-reverb petpulse-queue
+```
+
+**6. Programador.** En Virtualmin, *Webmin → System → Scheduled Cron Jobs*, o bien
+`sudo crontab -u petpulse -e`:
+
+```
+* * * * * cd /home/petpulse/domains/petpulse.suclinica.com/public_html && php artisan schedule:run >> /dev/null 2>&1
+```
+
+**7. `deploy/deploy.sh`.** Edite las dos últimas órdenes de reinicio: cambie
+`php8.4-fpm` por el nombre del servicio FPM de Virtualmin (`systemctl list-units | grep fpm`,
+normalmente `php8.4-fpm`), y ejecútelo como el usuario `petpulse` con `sudo` disponible
+para esos dos `systemctl`.
+
+**Comprobaciones específicas de Apache:**
+
+```bash
+apachectl -M | grep -E "proxy_wstunnel|rewrite"      # ambos deben aparecer
+curl -I https://petpulse.suclinica.com/up            # 200
+curl -s https://petpulse.suclinica.com/apps/petpulse/channels -o /dev/null -w "%{http_code}\n"   # 401 = Reverb responde detrás de Apache
+```
+
+Si `/up` devuelve el listado de archivos o un 403, la raíz del documento no apunta a
+`public/`. Si el tablero no se actualiza en vivo, vea la consola del navegador: la
+conexión a `wss://…/app/<clave>` debe quedar en estado *101 Switching Protocols*; un 404
+ahí significa que las directivas de proxy no están en el bloque del puerto 443.
+
+### Alojamiento compartido
+
+En alojamientos compartidos sin acceso root (cPanel básico) no es posible mantener Reverb
+en marcha ni usar systemd: PetPulse necesita un VPS o servidor dedicado, como el suyo.
