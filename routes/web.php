@@ -2,14 +2,25 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Hospital\AdministerDoseController;
+use App\Http\Controllers\LandingController;
 use App\Livewire\Hospital\KardexBoard;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('hospital.kardex'));
+// Public site
+Route::get('/', LandingController::class)->name('home');
 
+// Authentication
+Route::middleware('guest')->group(function (): void {
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('throttle:10,1');
+});
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth')->name('logout');
+
+// Clinical application (tenant-scoped)
 Route::middleware(['auth', 'clinic'])
     ->prefix('hospital')
     ->name('hospital.')
@@ -21,7 +32,7 @@ Route::middleware(['auth', 'clinic'])
             ->name('kardex.administer');
     });
 
-// Local-only impersonation helper for the seeded demo (no auth UI is shipped).
+// Local-only impersonation helper for the seeded demo.
 if (app()->environment('local')) {
     Route::get('/dev/login/{user}', function (User $user) {
         Auth::login($user);
@@ -29,7 +40,3 @@ if (app()->environment('local')) {
         return redirect()->route('hospital.kardex');
     })->name('dev.login');
 }
-
-Route::get('/login', fn () => app()->environment('local')
-    ? response('Demo: visite /dev/login/{userId} (ver DatabaseSeeder).', 401)
-    : abort(401))->name('login');

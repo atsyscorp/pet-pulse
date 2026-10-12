@@ -19,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['clinic' => IdentifyClinic::class]);
+        $middleware->redirectGuestsTo(fn () => route('login'));
+        $middleware->redirectUsersTo(fn () => route('hospital.kardex'));
 
         // In production the app sits behind Caddy (compose.yaml), which terminates
         // TLS; trust it so url(), secure cookies and the /broadcasting/auth scheme

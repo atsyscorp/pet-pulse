@@ -56,9 +56,7 @@
     <header class="z-30 md:sticky md:top-0 border-b border-slate-800 bg-slate-900 text-white shadow-lg">
         <div class="flex flex-wrap items-center gap-3 px-4 py-3 lg:px-6">
             <div class="mr-auto flex items-center gap-3">
-                <svg class="size-8 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h4l3-8 4 16 3-8h4" />
-                </svg>
+                <img src="{{ asset('images/icon-192.png') }}" alt="PetPulse" width="36" height="36" class="size-9 rounded-lg">
                 <div>
                     <h1 class="text-xl font-bold leading-tight tracking-tight">Kárdex UCI</h1>
                     <p class="flex items-center gap-2 text-xs text-slate-300">
@@ -136,6 +134,11 @@
             @endif
 
             <span wire:loading.delay class="ml-auto text-xs font-medium text-slate-400">Actualizando…</span>
+
+            <form method="POST" action="{{ route('logout') }}" class="ml-2">
+                @csrf
+                <button type="submit" class="h-11 rounded-full px-4 text-sm font-semibold text-slate-300 ring-1 ring-inset ring-slate-600 hover:bg-slate-800" title="{{ auth()->user()?->name }}">Salir</button>
+            </form>
         </div>
     </header>
 

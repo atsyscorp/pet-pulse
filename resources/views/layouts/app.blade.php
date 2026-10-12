@@ -4,10 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="petpulse-realtime" content="1">
     {{-- Wall displays / tablets pinned to the home screen run full-screen. --}}
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f172a">
     <title>{{ $title ?? 'Kárdex' }} · {{ config('app.name') }}</title>
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="apple-touch-icon" href="{{ asset('images/apple-touch-icon.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full font-sans text-slate-900 antialiased select-none">

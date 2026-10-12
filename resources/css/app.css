@@ -12,3 +12,41 @@
 [x-cloak] {
     display: none !important;
 }
+
+/* ───────────── PetPulse brand (from the neon logo) ───────────── */
+@theme {
+    --color-night: #120c36;          /* logo background indigo */
+    --color-neon-cyan: #22e5f5;      /* neon cyan stroke */
+    --color-neon-violet: #b45cff;    /* neon violet stroke */
+}
+
+@utility btn-neon {
+    @apply inline-flex items-center gap-2 rounded-xl bg-neon-cyan px-4 py-2 text-sm font-bold text-night shadow-[0_0_24px_rgba(34,229,245,0.45)] transition hover:bg-cyan-300 hover:shadow-[0_0_32px_rgba(34,229,245,0.65)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.98];
+}
+
+@utility card-neon {
+    @apply relative rounded-3xl border border-white/10 bg-white/[0.04] p-6 transition hover:border-neon-cyan/40 hover:bg-white/[0.06];
+}
+
+@utility icon-neon {
+    @apply grid size-12 place-items-center rounded-2xl bg-neon-violet/15 text-neon-violet ring-1 ring-inset ring-neon-violet/40 [&>svg]:size-6;
+}
+
+@utility step-neon {
+    @apply grid size-12 place-items-center rounded-2xl bg-neon-cyan/15 text-xl font-black text-neon-cyan ring-1 ring-inset ring-neon-cyan/40;
+}
+
+@utility input-neon {
+    @apply block w-full rounded-xl border-0 bg-white/[0.06] px-4 py-3 text-base text-white ring-1 ring-inset ring-white/20 placeholder:text-slate-500 focus:ring-2 focus:ring-neon-cyan;
+}
+
+@utility text-glow-cyan {
+    text-shadow: 0 0 18px rgba(34, 229, 245, 0.6);
+}
+
+@utility bg-grid {
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+    background-size: 48px 48px;
+}
