@@ -14,7 +14,7 @@
             <path d="{{ $trace }}" class="trace-live" fill="none" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" pathLength="1000"/>
         </svg>
 
-        <div class="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-40 pt-14 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pb-44 lg:pt-20">
+        <div class="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-44 pt-14 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pb-56 lg:pt-20">
             <div>
                 <h1 class="text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-ink sm:text-5xl lg:text-6xl">
                     Hospitalización veterinaria con control de cada dosis

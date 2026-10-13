@@ -33,7 +33,7 @@
     --pp-accent-hover: #1f1557;
     --pp-on-accent: #ffffff;
     --pp-trace: #0e7490;
-    --pp-crt: #2f9e63;
+    --pp-crt: #6b9a2e;
     --pp-ring: #120c36;
     --pp-ok: #047857;
     --pp-ok-soft: #d1fae5;
@@ -55,7 +55,7 @@
     --pp-accent-hover: #67eef9;
     --pp-on-accent: #120c36;
     --pp-trace: #22e5f5;
-    --pp-crt: #6fe3a1;
+    --pp-crt: #a3d95b;
     --pp-ring: #22e5f5;
     --pp-ok: #6ee7b7;
     --pp-ok-soft: #064e3b;
@@ -216,7 +216,7 @@ html[data-theme-pref='system'] .theme-toggle [data-theme-set='system'] {
 }
 
 .trace-line {
-    stroke: var(--pp-trace);
+    stroke: var(--pp-crt);
 }
 
 @media (prefers-reduced-motion: reduce) {

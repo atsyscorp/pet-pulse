@@ -52,7 +52,7 @@
       "crt": {
         "role": "secondary",
         "displayName": "CRT Phosphor",
-        "canonical": "#2f9e63",
+        "canonical": "#6b9a2e",
         "tonalRamp": [
           "#123b25",
           "#1f6841",
@@ -415,7 +415,7 @@
       }
     ],
     "openQuestions": [
-      "CRT Phosphor (#2f9e63 / #6fe3a1) sits close in hue to status green. The user has not decided whether to shift its hue or unify all traces on one color (steps connector and login mark are still teal). Do not extend phosphor green to new elements until resolved."
+      "CRT Phosphor (#6b9a2e / #a3d95b) sits close in hue to status green. The user has not decided whether to shift its hue or unify all traces on one color (steps connector and login mark are still teal). Do not extend phosphor green to new elements until resolved."
     ],
     "dos": [
       "Do default to light, offer light, dark and system, store the explicit choice under petpulse-theme, and apply it before first paint.",

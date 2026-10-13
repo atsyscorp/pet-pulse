@@ -12,7 +12,7 @@ colors:
   accent-hover: "#1f1557"
   on-accent: "#ffffff"
   trace: "#0e7490"
-  crt: "#2f9e63"
+  crt: "#6b9a2e"
   ok: "#047857"
   ok-soft: "#d1fae5"
   late: "#b91c1c"
@@ -29,7 +29,7 @@ colors:
   accent-hover-dark: "#67eef9"
   on-accent-dark: "#120c36"
   trace-dark: "#22e5f5"
-  crt-dark: "#6fe3a1"
+  crt-dark: "#a3d95b"
   ok-dark: "#6ee7b7"
   ok-soft-dark: "#064e3b"
   late-dark: "#fca5a5"
@@ -185,8 +185,8 @@ A cool paper-and-white tonal ramp with night-indigo ink and action in light them
 - **Night Indigo** (#120c36, `--pp-accent`): primary action fill, selection, focus ring and wordmark ink in light theme; hover is Indigo Lift (#1f1557). In dark theme this same role is taken by **Pulse Cyan** (#22e5f5, hover #67eef9) with Night text (#120c36), and Night Indigo becomes the page background.
 
 ### Secondary
-- **Trace Teal** (#0e7490 light / #22e5f5 dark, `--pp-trace`): the "Pulse" half of the wordmark, the step-connector trace, the login mark and link-underline hover. Teal passes contrast on light surfaces; cyan is used only in dark theme.
-- **CRT Phosphor** (#2f9e63 light / #6fe3a1 dark, `--pp-crt`): reserved for the hero backdrop ECG sweep (a faint base line at 32% opacity plus the bright live segment). Nothing else uses it.
+- **Trace Teal** (#0e7490 light / #22e5f5 dark, `--pp-trace`): the "Pulse" half of the wordmark, and link-underline hover. Teal passes contrast on light surfaces; cyan is used only in dark theme.
+- **CRT Phosphor** (#6b9a2e light / #a3d95b dark, `--pp-crt`): the single trace color of the system, a yellowish old-monitor green kept well away from status green's blue-green hue. Used for every ECG trace: the hero backdrop sweep (a faint base line at 32% opacity plus the bright live segment), the step connector and the login mark.
 
 ### Neutral
 - **Page Paper** (#f1f5f9 light / #120c36 dark): page background.
@@ -207,13 +207,13 @@ Soft fill with a saturated label color, each paired with an icon and a word:
 `screen` #0d0928, `screen-raised` #1b1450, `screen-line` #342b6e, `screen-muted` #b9b4dc, `screen-ok` #6ee7b7 on #064e3b, `screen-soon` #fcd34d on #78350f, `screen-late` #fecaca on #7f1d1d, `screen-idle` #2a2160. Text on it is #f8fafc.
 
 ### Named Rules
-**The Trace-Only Cyan Rule.** Cyan (#22e5f5) is a dark-theme action fill and trace line, never a paragraph color on a light surface; light theme uses Trace Teal.
+**The Trace-Only Cyan Rule.** Cyan (#22e5f5) is a dark-theme action fill and accent, never a paragraph color on a light surface; light theme uses Trace Teal.
 
-**The Status Is Sacred Rule.** Green, red and amber mean dose state and nothing else. No decorative use anywhere. The hero trace is CRT Phosphor, a separate token, and is not a status color.
+**The Status Is Sacred Rule.** Green, red and amber mean dose state and nothing else. No decorative use anywhere. Traces use CRT Phosphor, a separate yellower token, and are not a status color.
 
 **The Dark Device Rule.** The monitor panel keeps its `screen-*` tokens in both themes. It is a device, not a surface that themes.
 
-*Open question, not a decision:* CRT Phosphor (#2f9e63 / #6fe3a1) sits close in hue to status green. It is kept because it appears only as a faint backdrop line far from any dose cell, but the user has not decided whether to shift its hue or unify all traces on one color (the steps connector and login mark are still teal). Do not extend phosphor green to new elements until this is resolved.
+*Resolved:* CRT Phosphor was moved to a yellower hue (about 90°) so it no longer reads as the status green (about 160°), and all traces now share it, so the motif has one color.
 
 ## Typography
 
@@ -280,7 +280,7 @@ Large, friendly corners that read as tappable: 12 px for buttons, fields, toggle
 - Each feature pairs copy with a drawn, real-looking specimen inside a Panel: a kárdex grid (3 patients by 6 hours), an inventory readout with a progress bar and note, a ledger table with tabular figures, and a three-clinic comparison. Specimens use synthetic data and say so.
 
 ### Steps with trace line
-- Numbered 48 px tiles (16 px radius, Surface, 1 px Line) under a Trace Teal ECG polyline on desktop, a vertical 1 px Line on phones.
+- Numbered 48 px tiles (16 px radius, Surface, 1 px Line) under a CRT Phosphor ECG polyline on desktop, a vertical 1 px Line on phones.
 
 ### Navigation
 - Sticky 64 px header on Page at 95%, bottom 1 px Line. Logo tile (40 px, 12 px radius) with wordmark "PetPulse" in one word, "Pulse" in Trace. Links are 14 px semibold Muted with Ink hover and 48 px hit height.
@@ -302,7 +302,7 @@ Large, friendly corners that read as tappable: 12 px for buttons, fields, toggle
 ### Don't:
 - **Don't** add glow to anything other than the hero ECG live trace; no neon text-shadow, blurred orbs, or box-shadow depth.
 - **Don't** put Pulse Cyan text on a light surface; use Trace Teal.
-- **Don't** use green, red or amber decoratively, and don't use CRT Phosphor for anything but the hero trace until the open hue question is settled.
+- **Don't** use green, red or amber decoratively, and don't use CRT Phosphor for anything but ECG traces.
 - **Don't** animate inside the kárdex board beyond the overdue dot.
 - **Don't** replace ruled feature rows with an icon-card grid.
 - **Don't** invent customers, testimonials or metrics in marketing sections.
