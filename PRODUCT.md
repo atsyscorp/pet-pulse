@@ -36,7 +36,7 @@ Hospital wards with tablets at the bedside and wall displays in the ICU, often o
 
 ## Capabilities and Constraints
 
-- Stack: PHP 8.3+, Laravel 13, Livewire 4, Alpine.js, Tailwind CSS 4, Reverb. PostgreSQL in production; SQLite only in tests.
+- Stack: PHP 8.4+, Laravel 13, Livewire 4, Alpine.js, Tailwind CSS 4, Reverb. PostgreSQL in production; SQLite only in tests.
 - Row-level multi-tenancy by `clinic_id`. Broadcast payloads carry no owner personal data.
 - Quantities are never floats (`Quantity` wrapper).
 - Terms: *kárdex*, *dosis*, *triage* (Crítico / Intermedio / Observación), *5 correctos*, *fraccional*, *vial*.

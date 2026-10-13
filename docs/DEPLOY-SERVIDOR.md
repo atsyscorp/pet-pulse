@@ -16,7 +16,7 @@ Archivos del repositorio que se usan aquí:
 
 ## 1. Requisitos en el servidor
 
-- **PHP 8.3 o superior** (FPM) con las extensiones: `pgsql`, `pdo_pgsql`, `mbstring`, `xml`,
+- **PHP 8.4 o superior** (FPM) con las extensiones: `pgsql`, `pdo_pgsql`, `mbstring`, `xml`,
   `curl`, `zip`, `intl`, `bcmath`, `opcache`, `pcntl`.
 - **Composer 2**, **Node.js 20+** y npm (solo para compilar los assets).
 - **Nginx** (o Apache, ver nota al final) y **certbot** para el certificado TLS.

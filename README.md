@@ -5,7 +5,7 @@ Its core module is a **high-precision hospitalization kárdex**. It tracks fract
 stock (4-decimal micro-doses, automatic vial unsealing) and bedside administration by several
 nurses at once, with every ICU screen updated in real time.
 
-**Stack:** PHP 8.3+, Laravel 13, Livewire 4 (v3-compatible API), Alpine.js, Tailwind CSS 4, Laravel Reverb.
+**Stack:** PHP 8.4+, Laravel 13, Livewire 4 (v3-compatible API), Alpine.js, Tailwind CSS 4, Laravel Reverb.
 
 ---
 
