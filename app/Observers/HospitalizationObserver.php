@@ -6,9 +6,11 @@ namespace App\Observers;
 
 use App\Enums\HospitalizationStatus;
 use App\Enums\KardexStatus;
+use App\Enums\PrescriptionStatus;
 use App\Events\KardexUpdated;
 use App\Models\Hospitalization;
 use App\Models\KardexSchedule;
+use App\Services\Hospitalization\KardexNotifier;
 use Illuminate\Support\Carbon;
 
 /**
@@ -37,7 +39,12 @@ final class HospitalizationObserver
             return;
         }
 
-        $hospitalization->kardexSchedules()
+        // The orders end with the stay; their remaining doses are cancelled below.
+        $hospitalization->prescriptions()
+            ->where('status', PrescriptionStatus::Active)
+            ->update(['status' => PrescriptionStatus::Completed, 'updated_at' => Carbon::now()]);
+
+        $cancelled = $hospitalization->kardexSchedules()
             ->where('status', KardexStatus::Pending)
             ->lockForUpdate()
             ->get()
@@ -46,8 +53,11 @@ final class HospitalizationObserver
                     'status' => KardexStatus::Cancelled,
                     'notes' => trim(($schedule->notes ?? '')."\nCancelada automáticamente: egreso ({$hospitalization->status->value})."),
                 ])->save();
-
-                event(KardexUpdated::scheduleChanged($schedule, 'cancelled'));
             });
+
+        // One signal per discharge: boards re-query on any KardexUpdated.
+        if ($cancelled->isNotEmpty()) {
+            app(KardexNotifier::class)->notify(KardexUpdated::scheduleChanged($cancelled->first(), 'cancelled'));
+        }
     }
 }

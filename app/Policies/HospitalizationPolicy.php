@@ -14,6 +14,13 @@ final class HospitalizationPolicy
         return $user->clinic_id !== null && $user->role->canManageAdmissions();
     }
 
+    public function prescribe(User $user, Hospitalization $hospitalization): bool
+    {
+        return $user->belongsToClinic((int) $hospitalization->clinic_id)
+            && $user->role->canPrescribe()
+            && $hospitalization->isActive();
+    }
+
     public function discharge(User $user, Hospitalization $hospitalization): bool
     {
         return $user->belongsToClinic((int) $hospitalization->clinic_id)

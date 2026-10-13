@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @property string $dose_amount decimal:4 string
  */
 #[Fillable([
-    'clinic_id', 'hospitalization_id', 'drug_id', 'prescribed_by', 'dose_amount',
+    'clinic_id', 'hospitalization_id', 'prescription_id', 'drug_id', 'prescribed_by', 'dose_amount',
     'dose_per_kg', 'weight_kg_at_prescription', 'route', 'scheduled_at',
     'administered_at', 'administered_by', 'status', 'notes',
 ])]
@@ -77,6 +77,12 @@ class KardexSchedule extends Model
     public function hospitalization(): BelongsTo
     {
         return $this->belongsTo(Hospitalization::class);
+    }
+
+    /** @return BelongsTo<Prescription, $this> */
+    public function prescription(): BelongsTo
+    {
+        return $this->belongsTo(Prescription::class);
     }
 
     /** @return BelongsTo<Drug, $this> */

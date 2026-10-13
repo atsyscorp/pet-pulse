@@ -136,6 +136,7 @@
             <span wire:loading.delay class="ml-auto text-xs font-medium text-slate-400">Actualizando…</span>
 
             <a href="{{ route('hospital.patients.index') }}" class="ml-2 flex h-11 items-center rounded-full px-4 text-sm font-semibold text-slate-300 ring-1 ring-inset ring-slate-600 hover:bg-slate-800">Pacientes</a>
+            <a href="{{ route('hospital.drugs.index') }}" class="flex h-11 items-center rounded-full px-4 text-sm font-semibold text-slate-300 ring-1 ring-inset ring-slate-600 hover:bg-slate-800">Medicamentos</a>
 
             <form method="POST" action="{{ route('logout') }}" class="ml-2">
                 @csrf
@@ -233,7 +234,7 @@
                                 ])>
                                     <div class="flex items-start justify-between gap-2">
                                         <div class="min-w-0">
-                                            <p class="truncate text-base font-bold leading-tight sm:text-lg">{{ $stay->patient->name }}</p>
+                                            <a href="{{ route('hospital.patients.show', $stay->patient) }}" class="block truncate text-base font-bold leading-tight hover:underline sm:text-lg">{{ $stay->patient->name }}</a>
                                             <p class="truncate text-sm text-slate-500">
                                                 {{ $stay->patient->species }}@if ($stay->patient->breed) · {{ $stay->patient->breed }}@endif
                                             </p>
@@ -247,7 +248,7 @@
                                             {{ $stay->triage_level->label() }}
                                         </span>
                                         <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold tabular-nums text-slate-700">
-                                            {{ rtrim(rtrim((string) $stay->current_weight_kg, '0'), '.') }} kg
+                                            {{ str_replace('.', ',', rtrim(rtrim((string) $stay->current_weight_kg, '0'), '.')) }} kg
                                         </span>
                                         @unless ($stay->isActive())
                                             <span class="rounded-full bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600">Egresado</span>

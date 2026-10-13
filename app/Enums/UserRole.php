@@ -32,6 +32,18 @@ enum UserRole: string
         return true;
     }
 
+    /** Prescribing is a veterinary act (Ley 576 de 2000); admins keep it for small clinics run by a vet-owner. */
+    public function canPrescribe(): bool
+    {
+        return in_array($this, [self::Admin, self::Veterinarian], true);
+    }
+
+    /** Creating drugs and receiving stock: the people accountable for the pharmacy. */
+    public function canManageDrugs(): bool
+    {
+        return in_array($this, [self::Admin, self::Veterinarian], true);
+    }
+
     /** Admitting and discharging is a clinical decision. */
     public function canManageAdmissions(): bool
     {

@@ -41,7 +41,8 @@ Hospital wards with tablets at the bedside and wall displays in the ICU, often o
 - Quantities are never floats (`Quantity` wrapper).
 - Terms: *kárdex*, *dosis*, *triage* (Crítico / Intermedio / Observación), *5 correctos*, *fraccional*, *vial*.
 - Public site: landing (`/`) and login (`/login`). Clinical app under `/hospital/kardex`.
-- Not built yet: omission workflow, dose reversal, prescription UI, stock receiving/waste screens, real auth scaffolding beyond login.
+- Built: patients and admissions, prescriptions (per-kg or fixed dose, frequency, duration, suspension), drug catalog with stock receiving and the movement ledger.
+- Not built yet: omission workflow, dose reversal, constant-rate infusions, waste/adjustment screens, user management, password reset.
 
 ## Brand Commitments
 
