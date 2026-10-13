@@ -86,7 +86,7 @@ final class OwnerApiTest extends TestCase
             'name' => 'X', 'email' => 'x@example.com', 'password' => 'corta', 'device_name' => 'iPhone',
         ])->assertUnprocessable()
             ->assertJsonValidationErrors(['password', 'accept_terms'])
-            ->assertJsonPath('errors.accept_terms.0', 'Debe aceptar la política de tratamiento de datos personales.');
+            ->assertJsonPath('errors.accept_terms.0', 'Debes aceptar la política de tratamiento de datos personales.');
     }
 
     public function test_login_and_logout(): void
@@ -118,7 +118,7 @@ final class OwnerApiTest extends TestCase
         $other = Owner::factory()->create();
         Sanctum::actingAs($other, ['owner']);
         $this->postJson('/api/v1/owner/pets/link', ['code' => strtolower(substr($code, 0, 4).'-'.substr($code, 4))])
-            ->assertUnprocessable()->assertJsonPath('message', 'El código no es válido o ya venció. Pida uno nuevo en su clínica.');
+            ->assertUnprocessable()->assertJsonPath('message', 'El código no es válido o ya venció. Pide uno nuevo en tu clínica.');
     }
 
     public function test_expired_and_superseded_codes_do_not_work(): void

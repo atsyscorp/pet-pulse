@@ -53,7 +53,7 @@ class FakeOwnerApi {
         }
         if (path == '/register') {
           if (body['accept_terms'] != true) {
-            return _json(422, {'message': 'Revise los datos.', 'errors': {'accept_terms': ['Debe aceptar la política de tratamiento de datos personales.']}});
+            return _json(422, {'message': 'Revisa los datos.', 'errors': {'accept_terms': ['Debes aceptar la política de tratamiento de datos personales.']}});
           }
           issuedToken = '2|token';
           return _json(201, {'token': issuedToken, 'token_type': 'Bearer', 'expires_at': null, 'owner': _owner});
@@ -70,7 +70,7 @@ class FakeOwnerApi {
                   linked = true;
                   return _json(201, {'data': rocky()});
                 })()
-              : _json(422, {'message': 'El código no es válido o ya venció. Pida uno nuevo en su clínica.', 'errors': {'code': ['El código no es válido o ya venció. Pida uno nuevo en su clínica.']}}),
+              : _json(422, {'message': 'El código no es válido o ya venció. Pide uno nuevo en tu clínica.', 'errors': {'code': ['El código no es válido o ya venció. Pide uno nuevo en tu clínica.']}}),
           '/pets/12' => linked && !revoked ? _json(200, {'data': rocky()}) : _json(404, {'message': 'Not found'}),
           '/pets/12/updates' => _json(200, {
               'data': [

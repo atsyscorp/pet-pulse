@@ -41,8 +41,8 @@ final class OwnerRegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.unique' => 'Ya existe una cuenta con este correo. Inicie sesión.',
-            'accept_terms.accepted' => 'Debe aceptar la política de tratamiento de datos personales.',
+            'email.unique' => 'Ya existe una cuenta con este correo. Inicia sesión.',
+            'accept_terms.accepted' => 'Debes aceptar la política de tratamiento de datos personales.',
         ];
     }
 }

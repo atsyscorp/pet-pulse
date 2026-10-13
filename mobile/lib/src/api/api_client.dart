@@ -101,9 +101,9 @@ class ApiClient {
       case 422:
         final errors = (decoded['errors'] as Map<String, dynamic>? ?? const {})
             .map((field, messages) => MapEntry(field, (messages as List).cast<String>()));
-        throw ValidationException(decoded['message'] as String? ?? 'Revise los datos.', errors);
+        throw ValidationException(decoded['message'] as String? ?? 'Revisa los datos.', errors);
       case 429:
-        throw const ServerException('Demasiados intentos. Espere un momento e intente de nuevo.');
+        throw const ServerException('Demasiados intentos. Espera un momento e intenta de nuevo.');
       default:
         throw const ServerException();
     }

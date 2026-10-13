@@ -24,12 +24,12 @@ class WelcomeScreen extends StatelessWidget {
                     Center(child: Image.asset('assets/images/logo.webp', height: 150, semanticLabel: 'Logotipo de PetPulse')),
                     const SizedBox(height: 24),
                     const Text(
-                      'Consulte el estado de su canino o felino',
+                      'Consulta el estado de tu canino o felino',
                       style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, height: 1.15, letterSpacing: -0.5),
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Descubra lo que su mascota necesita: cómo sigue, los partes médicos '
+                      'Descubre lo que tu mascota necesita: cómo sigue, los partes médicos '
                       'y los medicamentos que le aplica la clínica.',
                       style: TextStyle(fontSize: 17, height: 1.5, color: scheme.onSurfaceVariant),
                     ),
@@ -45,7 +45,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Para ver a su mascota necesita el código que le entrega su clínica.',
+                      'Para ver a tu mascota necesitas el código que te entrega tu clínica.',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant),
                     ),

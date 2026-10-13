@@ -47,7 +47,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
             key: const PageStorageKey('updates'),
             fetch: (page) => context.read<Session>().api.updates(_pet.id, page: page),
             emptyTitle: 'Aún no hay partes médicos',
-            emptyBody: 'Cuando el equipo de la clínica escriba sobre ${_pet.name}, lo verá aquí.',
+            emptyBody: 'Cuando el equipo de la clínica escriba sobre ${_pet.name}, lo verás aquí.',
             emptyIcon: Icons.chat_bubble_outline,
             itemBuilder: (context, u) => _UpdateTile(update: u),
           ),
@@ -137,7 +137,7 @@ class _StatusTab extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'La información la publica ${pet.clinicName}. Ante cualquier duda, comuníquese con la clínica.',
+          'La información la publica ${pet.clinicName}. Ante cualquier duda, comunícate con la clínica.',
           style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
           textAlign: TextAlign.center,
         ),
