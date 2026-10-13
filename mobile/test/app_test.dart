@@ -28,7 +28,7 @@ void main() {
   testWidgets('signs in, links a pet with the clinic code and reads its status', (tester) async {
     final (server, session) = await boot(tester);
 
-    expect(find.text('Siga la hospitalización de su mascota'), findsOneWidget);
+    expect(find.text('Consulte el estado de su canino o felino'), findsOneWidget);
 
     await tester.tap(find.text('Ya tengo cuenta'));
     await tester.pumpAndSettle();
@@ -94,7 +94,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(session.status, SessionStatus.signedOut);
-    expect(find.text('Siga la hospitalización de su mascota'), findsOneWidget);
+    expect(find.text('Consulte el estado de su canino o felino'), findsOneWidget);
   });
 
   testWidgets('registration requires consent to the data policy', (tester) async {

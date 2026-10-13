@@ -21,16 +21,16 @@ class WelcomeScreen extends StatelessWidget {
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 440),
                   child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    Center(child: Image.asset('assets/images/logo.webp', height: 180, semanticLabel: 'Logotipo de PetPulse')),
-                    const SizedBox(height: 32),
+                    Center(child: Image.asset('assets/images/logo.webp', height: 150, semanticLabel: 'Logotipo de PetPulse')),
+                    const SizedBox(height: 24),
                     const Text(
-                      'Siga la hospitalización de su mascota',
+                      'Consulte el estado de su canino o felino',
                       style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, height: 1.15, letterSpacing: -0.5),
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Vea su estado, los partes médicos del equipo y los medicamentos aplicados, '
-                      'directamente desde la clínica veterinaria.',
+                      'Descubra lo que su mascota necesita: cómo sigue, los partes médicos '
+                      'y los medicamentos que le aplica la clínica.',
                       style: TextStyle(fontSize: 17, height: 1.5, color: scheme.onSurfaceVariant),
                     ),
                     const SizedBox(height: 32),
