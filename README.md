@@ -5,7 +5,7 @@ Its core module is a **high-precision hospitalization kárdex**. It tracks fract
 stock (4-decimal micro-doses, automatic vial unsealing) and bedside administration by several
 nurses at once, with every ICU screen updated in real time.
 
-**Stack:** PHP 8.3+, Laravel 13, Livewire 4 (v3-compatible API), Alpine.js, Tailwind CSS 4, Laravel Reverb.
+**Stack:** PHP 8.4+, Laravel 13, Livewire 4 (v3-compatible API), Alpine.js, Tailwind CSS 4, Laravel Reverb.
 
 ---
 
@@ -49,6 +49,7 @@ vendor/bin/pint --test        # code style
 | Real-time event | `app/Events/KardexUpdated.php`, `routes/channels.php`, `resources/js/echo.js` |
 | Lifecycle observer | `app/Observers/HospitalizationObserver.php` (a discharge cancels pending doses) |
 | Livewire board | `app/Livewire/Hospital/KardexBoard.php`, `resources/views/livewire/hospital/kardex-board.blade.php` |
+| Patients & admissions | `app/Livewire/Hospital/{PatientIndex,PatientEditor,PatientShow,AdmissionEditor}.php`, `app/Livewire/Forms/*`, `app/Services/Hospitalization/{AdmitPatientService,DischargePatientService}.php` |
 | HTTP API (scanners/mobile) | `POST /hospital/kardex/{schedule}/administer`: `AdministerDoseController` + `AdministerDoseRequest` |
 | Authorization | `app/Policies/KardexSchedulePolicy.php`, `App\Enums\UserRole` |
 | Domain exceptions | `app/Exceptions/Kardex/*` (rendered as HTTP 409 / Livewire toasts, not reported) |
@@ -147,7 +148,7 @@ clocks never disagree.
 
 ## Next steps (not in this iteration)
 * Omission workflow (`omitted` + mandatory reason) and dose reversal as a compensating ledger entry.
-* Prescription UI (a Form Request exists for administration only), with CRIs/infusions as a separate model.
+* Prescription UI (patients and admissions now have screens; the medication plan still needs one), with CRIs/infusions as a separate model.
 * PostgreSQL CI job with a parallel-process contention test for `lockForUpdate`.
 * Stock receiving/waste screens (the ledger already supports `package_received`, `waste`, `adjustment`).
 * Authentication scaffolding (Breeze/Fortify) to replace the local-only `/dev/login` helper.

@@ -135,6 +135,8 @@
 
             <span wire:loading.delay class="ml-auto text-xs font-medium text-slate-400">Actualizando…</span>
 
+            <a href="{{ route('hospital.patients.index') }}" class="ml-2 flex h-11 items-center rounded-full px-4 text-sm font-semibold text-slate-300 ring-1 ring-inset ring-slate-600 hover:bg-slate-800">Pacientes</a>
+
             <form method="POST" action="{{ route('logout') }}" class="ml-2">
                 @csrf
                 <button type="submit" class="h-11 rounded-full px-4 text-sm font-semibold text-slate-300 ring-1 ring-inset ring-slate-600 hover:bg-slate-800" title="{{ auth()->user()?->name }}">Salir</button>
