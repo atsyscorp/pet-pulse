@@ -12,4 +12,16 @@ enum DrugMovementType: string
     case Waste = 'waste';
     case ExpiredWaste = 'expired_waste';
     case Adjustment = 'adjustment';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::PackageReceived => 'Entrada',
+            self::PackageOpened => 'Apertura',
+            self::DoseAdministered => 'Administración',
+            self::Waste => 'Descarte',
+            self::ExpiredWaste => 'Descarte por vencimiento',
+            self::Adjustment => 'Ajuste',
+        };
+    }
 }

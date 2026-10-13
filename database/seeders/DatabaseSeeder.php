@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Enums\AdministrationRoute;
+use App\Enums\DoseMode;
 use App\Enums\TriageLevel;
 use App\Enums\UserRole;
 use App\Models\Clinic;
 use App\Models\Drug;
 use App\Models\Hospitalization;
-use App\Models\KardexSchedule;
 use App\Models\Patient;
 use App\Models\User;
+use App\Services\Hospitalization\PrescribeMedicationService;
+use App\Services\Hospitalization\PrescriptionPlan;
 use App\Tenancy\TenantContext;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
@@ -40,6 +42,8 @@ class DatabaseSeeder extends Seeder
 
     private function seedIcu(Clinic $clinic): void
     {
+        $prescriber = app(PrescribeMedicationService::class);
+
         $slug = $clinic->id;
 
         User::factory()->for($clinic)->role(UserRole::Admin)->create(['name' => 'Admin', 'email' => "admin{$slug}@petpulse.test"]);
@@ -122,18 +126,23 @@ class DatabaseSeeder extends Seeder
                 ],
             };
 
+            // Each line is a real prescription, expanded into kárdex rows by the
+            // same service the prescription screen uses; doses run until midnight.
             foreach ($plan as [$drugKey, $route, $every, $first, $dose]) {
-                for ($hour = $first; $hour < 24; $hour += $every) {
-                    KardexSchedule::create([
-                        'hospitalization_id' => $stay->id,
-                        'drug_id' => $drugs[$drugKey]->id,
-                        'prescribed_by' => $vet->id,
-                        'dose_amount' => $dose,
-                        'weight_kg_at_prescription' => $weight,
-                        'route' => $route,
-                        'scheduled_at' => $today->copy()->setHour($hour)->utc(),
-                    ]);
-                }
+                $start = $today->copy()->setHour($first);
+                $plan = PrescriptionPlan::make(
+                    drug: $drugs[$drugKey],
+                    mode: DoseMode::Fixed,
+                    dosePerKg: null,
+                    fixedAmount: $dose,
+                    weightKg: null,
+                    route: $route,
+                    frequencyHours: $every,
+                    startsAt: $start,
+                    durationHours: 24 - $first,
+                );
+
+                $prescriber->prescribe($stay, $plan, $vet->id, null);
             }
         }
     }

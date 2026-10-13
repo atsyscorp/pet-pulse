@@ -6,7 +6,15 @@ use App\Http\Controllers\AccessRequestController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Hospital\AdministerDoseController;
 use App\Http\Controllers\LandingController;
+use App\Livewire\Hospital\AdmissionEditor;
+use App\Livewire\Hospital\DrugEditor;
+use App\Livewire\Hospital\DrugIndex;
+use App\Livewire\Hospital\DrugShow;
 use App\Livewire\Hospital\KardexBoard;
+use App\Livewire\Hospital\PatientEditor;
+use App\Livewire\Hospital\PatientIndex;
+use App\Livewire\Hospital\PatientShow;
+use App\Livewire\Hospital\PrescriptionEditor;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +37,22 @@ Route::middleware(['auth', 'clinic'])
     ->name('hospital.')
     ->group(function (): void {
         Route::get('/kardex', KardexBoard::class)->name('kardex');
+
+        // Patients and admissions
+        Route::get('/pacientes', PatientIndex::class)->name('patients.index');
+        Route::get('/pacientes/nuevo', PatientEditor::class)->name('patients.create');
+        Route::get('/pacientes/{patient}', PatientShow::class)->name('patients.show');
+        Route::get('/pacientes/{patient}/editar', PatientEditor::class)->name('patients.edit');
+        Route::get('/pacientes/{patient}/ingreso', AdmissionEditor::class)->name('patients.admit');
+
+        // Prescriptions
+        Route::get('/hospitalizaciones/{hospitalization}/prescribir', PrescriptionEditor::class)->name('stays.prescribe');
+
+        // Drug catalog and stock
+        Route::get('/medicamentos', DrugIndex::class)->name('drugs.index');
+        Route::get('/medicamentos/nuevo', DrugEditor::class)->name('drugs.create');
+        Route::get('/medicamentos/{drug}', DrugShow::class)->name('drugs.show');
+        Route::get('/medicamentos/{drug}/editar', DrugEditor::class)->name('drugs.edit');
 
         Route::post('/kardex/{schedule}/administer', AdministerDoseController::class)
             ->middleware('throttle:60,1')
