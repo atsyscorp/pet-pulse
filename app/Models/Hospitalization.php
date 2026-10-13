@@ -67,6 +67,12 @@ class Hospitalization extends Model
         return $this->belongsTo(User::class, 'attending_vet_id');
     }
 
+    /** @return HasMany<Prescription, $this> */
+    public function prescriptions(): HasMany
+    {
+        return $this->hasMany(Prescription::class);
+    }
+
     /** @return HasMany<KardexSchedule, $this> */
     public function kardexSchedules(): HasMany
     {

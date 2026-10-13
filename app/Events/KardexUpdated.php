@@ -9,7 +9,6 @@ use App\Models\KardexSchedule;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 
 /**
@@ -24,10 +23,13 @@ use Illuminate\Foundation\Events\Dispatchable;
  * listeners use it as an invalidation signal and re-query through the tenant
  * scope, which also guarantees they render authorised data only.
  *
+ * Always dispatched through App\Services\Hospitalization\KardexNotifier, which
+ * sends it after commit and keeps a Reverb outage from failing the request.
+ *
  * Broadcast name defaults to the FQCN, which Laravel Echo resolves from the
  * short name `KardexUpdated` (Echo prefixes the `App.Events` namespace).
  */
-final class KardexUpdated implements ShouldBroadcastNow, ShouldDispatchAfterCommit
+final class KardexUpdated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets;
 
