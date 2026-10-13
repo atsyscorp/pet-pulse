@@ -74,7 +74,7 @@ class _LinkPetScreenState extends State<LinkPetScreen> {
             constraints: const BoxConstraints(maxWidth: 440),
             child: ListView(padding: const EdgeInsets.all(24), children: [
               Text(
-                'Su clínica le entrega un código de un solo uso, en papel o como QR, para cada mascota. Vence a los 7 días.',
+                'Tu clínica te entrega un código de un solo uso, en papel o como QR, para cada mascota. Vence a los 7 días.',
                 style: TextStyle(fontSize: 16, height: 1.5, color: scheme.onSurfaceVariant),
               ),
               const SizedBox(height: 24),
@@ -82,7 +82,7 @@ class _LinkPetScreenState extends State<LinkPetScreen> {
               const SizedBox(height: 24),
               Row(children: [
                 const Expanded(child: Divider()),
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text('o escriba el código', style: TextStyle(color: scheme.onSurfaceVariant))),
+                Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text('o escribe el código', style: TextStyle(color: scheme.onSurfaceVariant))),
                 const Expanded(child: Divider()),
               ]),
               const SizedBox(height: 24),

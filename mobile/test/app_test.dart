@@ -28,7 +28,7 @@ void main() {
   testWidgets('signs in, links a pet with the clinic code and reads its status', (tester) async {
     final (server, session) = await boot(tester);
 
-    expect(find.text('Consulte el estado de su canino o felino'), findsOneWidget);
+    expect(find.text('Consulta el estado de tu canino o felino'), findsOneWidget);
 
     await tester.tap(find.text('Ya tengo cuenta'));
     await tester.pumpAndSettle();
@@ -38,7 +38,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(session.status, SessionStatus.signedIn);
-    expect(find.text('Aún no tiene mascotas vinculadas'), findsOneWidget);
+    expect(find.text('Aún no tienes mascotas vinculadas'), findsOneWidget);
 
     // Link with a lowercase, dashless code: the formatter fixes it.
     await tester.tap(find.text('Vincular mascota'));
@@ -76,7 +76,7 @@ void main() {
     await tester.tap(find.text('Vincular'));
     await tester.pumpAndSettle();
 
-    expect(find.text('El código no es válido o ya venció. Pida uno nuevo en su clínica.'), findsOneWidget);
+    expect(find.text('El código no es válido o ya venció. Pide uno nuevo en tu clínica.'), findsOneWidget);
     expect(find.byType(LinkPetScreen), findsOneWidget);
   });
 
@@ -94,7 +94,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(session.status, SessionStatus.signedOut);
-    expect(find.text('Consulte el estado de su canino o felino'), findsOneWidget);
+    expect(find.text('Consulta el estado de tu canino o felino'), findsOneWidget);
   });
 
   testWidgets('registration requires consent to the data policy', (tester) async {
@@ -109,11 +109,11 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Crear cuenta'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Debe aceptar la política de tratamiento de datos personales.'), findsOneWidget);
+    expect(find.text('Debes aceptar la política de tratamiento de datos personales.'), findsOneWidget);
 
     await tester.tap(find.byType(CheckboxListTile));
     await tester.tap(find.widgetWithText(FilledButton, 'Crear cuenta'));
     await tester.pumpAndSettle();
-    expect(find.text('Aún no tiene mascotas vinculadas'), findsOneWidget);
+    expect(find.text('Aún no tienes mascotas vinculadas'), findsOneWidget);
   });
 }

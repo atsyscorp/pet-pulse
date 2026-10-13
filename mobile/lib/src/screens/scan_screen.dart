@@ -54,8 +54,8 @@ class _ScanScreenState extends State<ScanScreen> {
               padding: const EdgeInsets.all(32),
               child: Text(
                 error.errorCode == MobileScannerErrorCode.permissionDenied
-                    ? 'Sin permiso para usar la cámara. Actívelo en los ajustes del teléfono o escriba el código.'
-                    : 'No se pudo abrir la cámara. Escriba el código a mano.',
+                    ? 'Sin permiso para usar la cámara. Actívalo en los ajustes del teléfono o escribe el código.'
+                    : 'No se pudo abrir la cámara. Escribe el código a mano.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
@@ -74,7 +74,7 @@ class _ScanScreenState extends State<ScanScreen> {
           right: 24,
           bottom: 48,
           child: Text(
-            _foreignQr ? 'Ese QR no es de PetPulse. Apunte al QR que le dio la clínica.' : 'Apunte al QR que le entregó la clínica.',
+            _foreignQr ? 'Ese QR no es de PetPulse. Apunta al QR que te dio la clínica.' : 'Apunta al QR que te entregó la clínica.',
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
           ),

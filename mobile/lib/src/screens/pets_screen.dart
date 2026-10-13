@@ -56,7 +56,7 @@ class _PetsScreenState extends State<PetsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Cerrar sesión'),
-        content: const Text('Tendrá que volver a ingresar su correo y contraseña.'),
+        content: const Text('Tendrás que volver a ingresar tu correo y contraseña.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
           TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Cerrar sesión')),
@@ -89,7 +89,7 @@ class _PetsScreenState extends State<PetsScreen> {
     if (_error != null && _pets == null) {
       return _scrollable(MessageView(
         icon: Icons.wifi_off,
-        title: 'No pudimos cargar sus mascotas',
+        title: 'No pudimos cargar tus mascotas',
         body: errorText(_error!),
         action: OutlinedButton(onPressed: _load, child: const Text('Reintentar')),
       ));
@@ -99,8 +99,8 @@ class _PetsScreenState extends State<PetsScreen> {
     if (pets.isEmpty) {
       return _scrollable(MessageView(
         icon: Icons.pets,
-        title: 'Aún no tiene mascotas vinculadas',
-        body: 'Pida en su clínica veterinaria el código o QR de PetPulse para su mascota y vincúlela aquí.',
+        title: 'Aún no tienes mascotas vinculadas',
+        body: 'Pide en tu clínica veterinaria el código o QR de PetPulse para tu mascota y vincúlala aquí.',
         action: FilledButton.icon(onPressed: _link, icon: const Icon(Icons.qr_code_scanner), label: const Text('Vincular mascota')),
       ));
     }

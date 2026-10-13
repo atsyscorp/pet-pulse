@@ -128,4 +128,4 @@ class ErrorBanner extends StatelessWidget {
   }
 }
 
-String errorText(Object error) => error is ApiException ? error.message : 'Ocurrió un error inesperado. Intente de nuevo.';
+String errorText(Object error) => error is ApiException ? error.message : 'Ocurrió un error inesperado. Intenta de nuevo.';

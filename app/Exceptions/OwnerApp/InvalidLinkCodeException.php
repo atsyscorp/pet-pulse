@@ -14,6 +14,6 @@ final class InvalidLinkCodeException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('El código no es válido o ya venció. Pida uno nuevo en su clínica.');
+        parent::__construct('El código no es válido o ya venció. Pide uno nuevo en tu clínica.');
     }
 }
