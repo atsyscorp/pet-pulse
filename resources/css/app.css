@@ -27,6 +27,7 @@
     --pp-surface: #ffffff;
     --pp-sunken: #e8eef5;
     --pp-line: #d5dde8;
+    --pp-edge: #738398;
     --pp-ink: #0f172a;
     --pp-muted: #475569;
     --pp-accent: #120c36;
@@ -49,6 +50,7 @@
     --pp-surface: #1b1450;
     --pp-sunken: #0d0928;
     --pp-line: #342b6e;
+    --pp-edge: #7a74b4;
     --pp-ink: #f8fafc;
     --pp-muted: #b9b4dc;
     --pp-accent: #22e5f5;
@@ -70,6 +72,7 @@
     --color-surface: var(--pp-surface);
     --color-sunken: var(--pp-sunken);
     --color-line: var(--pp-line);
+    --color-edge: var(--pp-edge);
     --color-ink: var(--pp-ink);
     --color-muted: var(--pp-muted);
     --color-accent: var(--pp-accent);
@@ -140,7 +143,7 @@
 }
 
 @utility field {
-    @apply block min-h-12 w-full rounded-xl border border-line bg-surface px-4 py-3 text-base text-ink placeholder:text-muted/70 transition-colors duration-150 focus:border-ink;
+    @apply block min-h-12 w-full rounded-xl border border-edge bg-surface px-4 py-3 text-base text-ink placeholder:text-muted/70 transition-colors duration-150 focus:border-ink;
 }
 
 @utility link-quiet {

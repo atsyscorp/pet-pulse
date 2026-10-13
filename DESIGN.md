@@ -6,6 +6,7 @@ colors:
   surface: "#ffffff"
   sunken: "#e8eef5"
   line: "#d5dde8"
+  edge: "#738398"
   ink: "#0f172a"
   muted: "#475569"
   accent: "#120c36"
@@ -23,6 +24,7 @@ colors:
   surface-dark: "#1b1450"
   sunken-dark: "#0d0928"
   line-dark: "#342b6e"
+  edge-dark: "#7a74b4"
   ink-dark: "#f8fafc"
   muted-dark: "#b9b4dc"
   accent-dark: "#22e5f5"
@@ -192,7 +194,8 @@ A cool paper-and-white tonal ramp with night-indigo ink and action in light them
 - **Page Paper** (#f1f5f9 light / #120c36 dark): page background.
 - **Surface** (#ffffff light / #1b1450 dark): panels, fields, secondary buttons, toggle.
 - **Sunken** (#e8eef5 light / #0d0928 dark): recessed bands (steps section, footer), progress track, pending cell, button hover.
-- **Line** (#d5dde8 light / #342b6e dark): every border and divider; darker than the earlier draft's #e2e8f0 so hairlines register.
+- **Line** (#d5dde8 light / #342b6e dark): decorative borders and dividers; darker than the earlier draft's #e2e8f0 so hairlines register.
+- **Edge** (#738398 light / #7a74b4 dark, `--pp-edge`): the border of form controls (fields, checkboxes), at least 3:1 against their surface so a control's boundary is visible. Never used for decorative hairlines.
 - **Ink** (#0f172a light / #f8fafc dark): headings and body.
 - **Muted** (#475569 light / #b9b4dc dark): secondary text; darkened from #64748b to hold AA on Page and Sunken.
 

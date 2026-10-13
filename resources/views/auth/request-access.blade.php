@@ -107,7 +107,7 @@
 
                 <div class="mt-8">
                     <label class="flex min-h-12 items-start gap-3 text-sm leading-relaxed text-ink">
-                        <input type="checkbox" name="consent" value="1" required class="mt-0.5 size-6 shrink-0 rounded-md border-line accent-[var(--pp-accent)]" @checked(old('consent'))
+                        <input type="checkbox" name="consent" value="1" required class="mt-0.5 size-6 shrink-0 rounded-md border-edge accent-[var(--pp-accent)]" @checked(old('consent'))
                             @error('consent') aria-invalid="true" aria-describedby="consent-error" @enderror>
                         <span>Autorizo a PetPulse a tratar estos datos para responder mi solicitud, conforme a la Ley 1581 de 2012.</span>
                     </label>

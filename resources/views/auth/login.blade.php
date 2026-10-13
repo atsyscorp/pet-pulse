@@ -40,7 +40,7 @@
                 </div>
 
                 <label class="flex min-h-12 items-center gap-3 text-sm text-ink">
-                    <input type="checkbox" name="remember" value="1" class="size-6 shrink-0 rounded-md border-line accent-[var(--pp-accent)]" @checked(old('remember'))>
+                    <input type="checkbox" name="remember" value="1" class="size-6 shrink-0 rounded-md border-edge accent-[var(--pp-accent)]" @checked(old('remember'))>
                     Mantener la sesión iniciada en este dispositivo
                 </label>
 
