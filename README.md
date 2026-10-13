@@ -55,6 +55,7 @@ vendor/bin/pint --test        # code style
 | Realtime (best effort) | `app/Services/Hospitalization/KardexNotifier.php`: every `KardexUpdated` goes out after commit, and a Reverb outage is logged instead of failing the request |
 | Owner app API (v1) | `routes/api.php`, `app/Http/Controllers/Api/V1/Owner/*`, `app/Http/Resources/Owner/*`, `app/Services/OwnerApp/*`; reference in [docs/API-PROPIETARIOS.md](docs/API-PROPIETARIOS.md) |
 | Owner mobile app (Flutter) | `mobile/` — see [mobile/README.md](mobile/README.md); CI in `.github/workflows/mobile.yml` |
+| Superadmin panel (`/admin`) | `app/Http/Controllers/Admin/*`, `resources/views/admin/*`, `app/Models/PlatformAdmin.php` (own `admin` guard and table), `php artisan petpulse:superadmin` |
 | Spanish UI strings | `lang/es/*.php`, `lang/es.json` (validation, auth, pagination) |
 | HTTP API (scanners/mobile) | `POST /hospital/kardex/{schedule}/administer`: `AdministerDoseController` + `AdministerDoseRequest` |
 | Authorization | `app/Policies/KardexSchedulePolicy.php`, `App\Enums\UserRole` |
@@ -157,4 +158,4 @@ clocks never disagree.
 * Constant-rate infusions (CRIs) as their own model; prescriptions today cover intermittent doses.
 * PostgreSQL CI job with a parallel-process contention test for `lockForUpdate`.
 * Waste and adjustment screens (receiving is built; the ledger already supports `waste` and `adjustment`).
-* Authentication scaffolding (Breeze/Fortify) to replace the local-only `/dev/login` helper.
+* Two-factor authentication for superadministrators, and approving access requests from the panel.

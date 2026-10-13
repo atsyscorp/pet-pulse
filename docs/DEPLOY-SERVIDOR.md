@@ -175,8 +175,24 @@ App\Models\User::create([
 ]);
 ```
 
-La ruta `/dev/login/{id}` **no existe en producción** (`APP_ENV=production`); el inicio de
-sesión requiere la pantalla de autenticación, pendiente en el README.
+La ruta `/dev/login/{id}` **no existe en producción** (`APP_ENV=production`); el personal
+inicia sesión en `/login`.
+
+### Superadministrador de PetPulse
+
+El panel `/admin` muestra toda la plataforma: propietarios registrados en la app, clínicas,
+personal y solicitudes de acceso. Tiene su propio inicio de sesión (`/admin/login`), separado
+del de las clínicas: una cuenta de clínica nunca entra al panel, ni siquiera con rol
+Administrador. Las cuentas se crean solo desde la consola del servidor:
+
+```bash
+cd /var/www/petpulse && php artisan petpulse:superadmin
+```
+
+El comando pide el correo, el nombre y la contraseña (mínimo 12 caracteres, con mayúsculas,
+minúsculas y números). La contraseña se escribe oculta y nunca queda en el historial. Si el
+correo ya existe, el mismo comando cambia su contraseña. Cinco intentos fallidos bloquean el
+acceso de ese correo durante 15 minutos.
 
 ## 9. Actualizar a una versión nueva
 

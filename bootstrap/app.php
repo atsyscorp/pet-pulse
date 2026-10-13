@@ -26,8 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'owner' => EnsureOwner::class,
             'abilities' => CheckAbilities::class,
         ]);
-        $middleware->redirectGuestsTo(fn () => route('login'));
-        $middleware->redirectUsersTo(fn () => route('hospital.kardex'));
+        // /admin has its own guard and login; everything else is the clinic app.
+        $middleware->redirectGuestsTo(fn (Request $request) => $request->is('admin', 'admin/*') ? route('admin.login') : route('login'));
+        $middleware->redirectUsersTo(fn (Request $request) => $request->is('admin', 'admin/*') ? route('admin.dashboard') : route('hospital.kardex'));
 
         // In production the app sits behind Caddy (compose.yaml), which terminates
         // TLS; trust it so url(), secure cookies and the /broadcasting/auth scheme
