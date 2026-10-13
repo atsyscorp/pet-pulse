@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AccessRequestController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Hospital\AdministerDoseController;
 use App\Http\Controllers\LandingController;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 
 // Public site
 Route::get('/', LandingController::class)->name('home');
+Route::get('/solicitar-acceso', [AccessRequestController::class, 'create'])->name('access.create');
+Route::post('/solicitar-acceso', [AccessRequestController::class, 'store'])->middleware('throttle:6,1')->name('access.store');
 
 // Authentication
 Route::middleware('guest')->group(function (): void {

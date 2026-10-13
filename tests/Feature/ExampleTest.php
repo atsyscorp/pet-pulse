@@ -13,7 +13,8 @@ class ExampleTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee('PetPulse')
-            ->assertSee('Solicitar demostración')
+            ->assertSee('Solicitar acceso')
+            ->assertSee('Agende una demostración')
             ->assertSee(route('login'));
     }
 

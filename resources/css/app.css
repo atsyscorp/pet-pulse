@@ -1,11 +1,12 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/outfit';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji';
+    --font-sans: 'Outfit Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+        Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
 /* Hide Alpine-controlled elements until Alpine boots (prevents modal flash). */
@@ -13,40 +14,254 @@
     display: none !important;
 }
 
-/* ───────────── PetPulse brand (from the neon logo) ───────────── */
+/*
+ * PetPulse theme tokens. Two equal themes, chosen by the visitor with an
+ * explicit toggle (light / dark / system); an inline script in <head> sets
+ * `data-theme` on <html> before first paint. Depth is tonal: page -> surface,
+ * separated by a 1px line, never by glow or shadow.
+ */
+:root,
+:root[data-theme='light'] {
+    color-scheme: light;
+    --pp-page: #f1f5f9;
+    --pp-surface: #ffffff;
+    --pp-sunken: #e8eef5;
+    --pp-line: #d5dde8;
+    --pp-ink: #0f172a;
+    --pp-muted: #475569;
+    --pp-accent: #120c36;
+    --pp-accent-hover: #1f1557;
+    --pp-on-accent: #ffffff;
+    --pp-trace: #0e7490;
+    --pp-crt: #2f9e63;
+    --pp-ring: #120c36;
+    --pp-ok: #047857;
+    --pp-ok-soft: #d1fae5;
+    --pp-late: #b91c1c;
+    --pp-late-soft: #fee2e2;
+    --pp-soon: #92400e;
+    --pp-soon-soft: #fef3c7;
+}
+
+:root[data-theme='dark'] {
+    color-scheme: dark;
+    --pp-page: #120c36;
+    --pp-surface: #1b1450;
+    --pp-sunken: #0d0928;
+    --pp-line: #342b6e;
+    --pp-ink: #f8fafc;
+    --pp-muted: #b9b4dc;
+    --pp-accent: #22e5f5;
+    --pp-accent-hover: #67eef9;
+    --pp-on-accent: #120c36;
+    --pp-trace: #22e5f5;
+    --pp-crt: #6fe3a1;
+    --pp-ring: #22e5f5;
+    --pp-ok: #6ee7b7;
+    --pp-ok-soft: #064e3b;
+    --pp-late: #fca5a5;
+    --pp-late-soft: #7f1d1d;
+    --pp-soon: #fcd34d;
+    --pp-soon-soft: #78350f;
+}
+
+@theme inline {
+    --color-page: var(--pp-page);
+    --color-surface: var(--pp-surface);
+    --color-sunken: var(--pp-sunken);
+    --color-line: var(--pp-line);
+    --color-ink: var(--pp-ink);
+    --color-muted: var(--pp-muted);
+    --color-accent: var(--pp-accent);
+    --color-accent-hover: var(--pp-accent-hover);
+    --color-on-accent: var(--pp-on-accent);
+    --color-trace: var(--pp-trace);
+    --color-ok: var(--pp-ok);
+    --color-ok-soft: var(--pp-ok-soft);
+    --color-late: var(--pp-late);
+    --color-late-soft: var(--pp-late-soft);
+    --color-soon: var(--pp-soon);
+    --color-soon-soft: var(--pp-soon-soft);
+}
+
 @theme {
-    --color-night: #120c36;          /* logo background indigo */
-    --color-neon-cyan: #22e5f5;      /* neon cyan stroke */
-    --color-neon-violet: #b45cff;    /* neon violet stroke */
+    /* Brand colors from the logo. */
+    --color-night: #120c36;
+    --color-pulse-cyan: #22e5f5;
+    --color-pulse-violet: #b45cff;
+    --color-screen: #0d0928;
+    --color-screen-raised: #1b1450;
+    --color-screen-line: #342b6e;
+    --color-screen-muted: #b9b4dc;
+    --color-screen-ok: #6ee7b7;
+    --color-screen-ok-soft: #064e3b;
+    --color-screen-soon: #fcd34d;
+    --color-screen-soon-soft: #78350f;
+    --color-screen-late: #fecaca;
+    --color-screen-late-soft: #7f1d1d;
+    --color-screen-idle: #2a2160;
 }
 
-@utility btn-neon {
-    @apply inline-flex items-center gap-2 rounded-xl bg-neon-cyan px-4 py-2 text-sm font-bold text-night shadow-[0_0_24px_rgba(34,229,245,0.45)] transition hover:bg-cyan-300 hover:shadow-[0_0_32px_rgba(34,229,245,0.65)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.98];
+/* ───────────── Public site base ───────────── */
+.pp-body {
+    background: var(--pp-page);
+    color: var(--pp-ink);
+    font-feature-settings: 'tnum' 0;
 }
 
-@utility card-neon {
-    @apply relative rounded-3xl border border-white/10 bg-white/[0.04] p-6 transition hover:border-neon-cyan/40 hover:bg-white/[0.06];
+.pp-body ::selection {
+    background: var(--pp-accent);
+    color: var(--pp-on-accent);
 }
 
-@utility icon-neon {
-    @apply grid size-12 place-items-center rounded-2xl bg-neon-violet/15 text-neon-violet ring-1 ring-inset ring-neon-violet/40 [&>svg]:size-6;
+.pp-body :focus-visible {
+    outline: 2px solid var(--pp-ring);
+    outline-offset: 3px;
 }
 
-@utility step-neon {
-    @apply grid size-12 place-items-center rounded-2xl bg-neon-cyan/15 text-xl font-black text-neon-cyan ring-1 ring-inset ring-neon-cyan/40;
+.pp-body {
+    scrollbar-color: var(--pp-line) var(--pp-page);
 }
 
-@utility input-neon {
-    @apply block w-full rounded-xl border-0 bg-white/[0.06] px-4 py-3 text-base text-white ring-1 ring-inset ring-white/20 placeholder:text-slate-500 focus:ring-2 focus:ring-neon-cyan;
+.pp-num {
+    font-variant-numeric: tabular-nums;
 }
 
-@utility text-glow-cyan {
-    text-shadow: 0 0 18px rgba(34, 229, 245, 0.6);
+@utility btn-primary {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 text-base font-bold text-on-accent transition-colors duration-150 hover:bg-accent-hover active:scale-[0.98];
 }
 
-@utility bg-grid {
-    background-image:
-        linear-gradient(to right, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
-    background-size: 48px 48px;
+@utility btn-secondary {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-line bg-surface px-6 py-3 text-base font-bold text-ink transition-colors duration-150 hover:bg-sunken active:scale-[0.98];
+}
+
+@utility panel {
+    @apply rounded-3xl border border-line bg-surface;
+}
+
+@utility field {
+    @apply block min-h-12 w-full rounded-xl border border-line bg-surface px-4 py-3 text-base text-ink placeholder:text-muted/70 transition-colors duration-150 focus:border-ink;
+}
+
+@utility link-quiet {
+    @apply font-semibold text-ink underline decoration-line decoration-2 underline-offset-4 transition-colors hover:decoration-trace;
+}
+
+/* ───────────── Theme toggle ───────────── */
+.theme-toggle {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid var(--pp-line);
+    border-radius: 16px;
+    background: var(--pp-surface);
+}
+
+.theme-toggle button {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    color: var(--pp-muted);
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.theme-toggle button:hover {
+    color: var(--pp-ink);
+}
+
+.theme-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+html[data-theme-pref='light'] .theme-toggle [data-theme-set='light'],
+html[data-theme-pref='dark'] .theme-toggle [data-theme-set='dark'],
+html[data-theme-pref='system'] .theme-toggle [data-theme-set='system'] {
+    background: var(--pp-accent);
+    color: var(--pp-on-accent);
+}
+
+/* ───────────── Vital-signs monitor ───────────── */
+.monitor {
+    background: var(--color-screen);
+    color: #f8fafc;
+    border: 1px solid var(--color-screen-line);
+    border-radius: 24px;
+}
+
+.trace-base {
+    stroke: var(--pp-crt);
+    opacity: 0.32;
+}
+
+.hero-trace {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+.trace-live {
+    stroke: var(--pp-crt);
+    filter: drop-shadow(0 0 5px var(--pp-crt));
+    stroke-dasharray: 260 1000;
+    stroke-dashoffset: 260;
+    animation: trace-sweep 3s linear infinite;
+}
+
+@keyframes trace-sweep {
+    to {
+        stroke-dashoffset: -1000;
+    }
+}
+
+.trace-line {
+    stroke: var(--pp-trace);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .trace-live {
+        animation: none;
+        stroke-dasharray: none;
+        stroke-dashoffset: 0;
+    }
+
+    html {
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Dose-state cells in the in-page kárdex specimen. */
+.cell {
+    display: grid;
+    place-items: center;
+    height: 40px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.cell svg {
+    width: 16px;
+    height: 16px;
+}
+
+.cell-ok {
+    background: var(--pp-ok-soft);
+    color: var(--pp-ok);
+}
+
+.cell-late {
+    background: var(--pp-late-soft);
+    color: var(--pp-late);
+}
+
+.cell-soon {
+    background: var(--pp-soon-soft);
+    color: var(--pp-soon);
+}
+
+.cell-pending {
+    background: var(--pp-sunken);
+    color: var(--pp-muted);
 }
