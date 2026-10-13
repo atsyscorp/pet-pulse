@@ -6,13 +6,20 @@ namespace App\Livewire\Hospital;
 
 use App\Enums\HospitalizationStatus;
 use App\Enums\KardexStatus;
+use App\Enums\OwnerVisibleStatus;
 use App\Enums\PrescriptionStatus;
 use App\Exceptions\Prescription\PrescriptionNotAllowedException;
 use App\Models\Hospitalization;
+use App\Models\OwnerPatientLink;
+use App\Models\OwnerUpdate;
 use App\Models\Patient;
 use App\Models\Prescription;
 use App\Services\Hospitalization\DischargePatientService;
 use App\Services\Hospitalization\SuspendPrescriptionService;
+use App\Services\OwnerApp\LinkCode;
+use App\Services\OwnerApp\LinkCodeQr;
+use App\Services\OwnerApp\OwnerAccessService;
+use App\Services\OwnerApp\OwnerCommunicationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\Rule;
@@ -40,6 +47,15 @@ final class PatientShow extends Component
 
     public string $suspensionReason = '';
 
+    // Owner app: the code is shown once (only its hash is stored).
+    public ?string $issuedCode = null;
+
+    public ?string $issuedCodeExpiresAt = null;
+
+    public string $ownerStatus = '';
+
+    public string $updateBody = '';
+
     /** In-page confirmation after an action that does not navigate away. */
     public ?string $notice = null;
 
@@ -47,6 +63,81 @@ final class PatientShow extends Component
     {
         $this->authorize('view', $patient);
         $this->patient = $patient;
+        $this->ownerStatus = $this->activeStay?->owner_status?->value ?? '';
+    }
+
+    // ───────────── Owner app ─────────────
+
+    /** @return Collection<int, OwnerPatientLink> */
+    #[Computed]
+    public function ownerLinks(): Collection
+    {
+        return $this->patient->ownerLinks()
+            ->whereNull('revoked_at')
+            ->with('owner:id,name,email,phone')
+            ->latest('linked_at')
+            ->get();
+    }
+
+    /** @return Collection<int, OwnerUpdate> */
+    #[Computed]
+    public function ownerUpdates(): Collection
+    {
+        $stay = $this->activeStay;
+
+        return $stay === null ? new Collection : $stay->ownerUpdates()->with('author:id,name')->latest('id')->limit(10)->get();
+    }
+
+    public function issueLinkCode(OwnerAccessService $access): void
+    {
+        $this->authorize('manageOwnerAccess', $this->patient);
+
+        $issued = $access->issueCode($this->patient, (int) auth()->id());
+        $this->issuedCode = $issued['code'];
+        $this->issuedCodeExpiresAt = $issued['expires_at']->toIso8601String();
+    }
+
+    public function revokeOwnerLink(int $linkId, OwnerAccessService $access): void
+    {
+        $this->authorize('manageOwnerAccess', $this->patient);
+
+        $link = $this->patient->ownerLinks()->whereNull('revoked_at')->with('owner:id,name')->findOrFail($linkId);
+        $access->revoke($link, (int) auth()->id());
+
+        unset($this->ownerLinks);
+        $this->notice = "Se retiró el acceso de {$link->owner->name} a la app.";
+        $this->dispatch('clinical-notice');
+    }
+
+    public function saveOwnerStatus(OwnerCommunicationService $comms): void
+    {
+        $stay = $this->activeStay;
+        abort_if($stay === null, 404);
+        $this->authorize('informOwner', $stay);
+
+        $this->validate(['ownerStatus' => ['nullable', Rule::enum(OwnerVisibleStatus::class)]], [], ['ownerStatus' => 'estado para el propietario']);
+
+        $comms->setStatus($stay, OwnerVisibleStatus::tryFrom($this->ownerStatus));
+        unset($this->activeStay);
+        $this->notice = $this->ownerStatus === ''
+            ? 'El propietario verá solo "Hospitalizado", sin estado.'
+            : 'El propietario ahora ve: '.OwnerVisibleStatus::from($this->ownerStatus)->label().'.';
+        $this->dispatch('clinical-notice');
+    }
+
+    public function publishOwnerUpdate(OwnerCommunicationService $comms): void
+    {
+        $stay = $this->activeStay;
+        abort_if($stay === null, 404);
+        $this->authorize('informOwner', $stay);
+
+        $this->validate(['updateBody' => ['required', 'string', 'min:5', 'max:2000']], [], ['updateBody' => 'parte médico']);
+
+        $comms->publishUpdate($stay, (int) auth()->id(), $this->updateBody);
+        $this->updateBody = '';
+        unset($this->ownerUpdates);
+        $this->notice = 'Parte médico publicado en la app del propietario.';
+        $this->dispatch('clinical-notice');
     }
 
     #[Computed]
@@ -177,6 +268,9 @@ final class PatientShow extends Component
     public function render(): View
     {
         return view('livewire.hospital.patient-show', [
+            'issuedCodeDisplay' => $this->issuedCode !== null ? LinkCode::display($this->issuedCode) : null,
+            'issuedCodeQr' => $this->issuedCode !== null ? LinkCodeQr::svg($this->issuedCode) : null,
+            'ownerStatuses' => OwnerVisibleStatus::cases(),
             'dischargeOptions' => HospitalizationStatus::dischargeOptions(),
             'timezone' => auth()->user()?->clinic?->timezone ?? config('app.timezone'),
         ]);

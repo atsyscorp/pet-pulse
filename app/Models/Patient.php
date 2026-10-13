@@ -60,6 +60,22 @@ class Patient extends Model
         return $this->hasOne(Hospitalization::class)->where('status', HospitalizationStatus::Admitted);
     }
 
+    /**
+     * Most recent stay (open or closed), for the owner app.
+     *
+     * @return HasOne<Hospitalization, $this>
+     */
+    public function latestHospitalization(): HasOne
+    {
+        return $this->hasOne(Hospitalization::class)->latestOfMany('admitted_at');
+    }
+
+    /** @return HasMany<OwnerPatientLink, $this> */
+    public function ownerLinks(): HasMany
+    {
+        return $this->hasMany(OwnerPatientLink::class);
+    }
+
     /** @return HasMany<Hospitalization, $this> */
     public function hospitalizations(): HasMany
     {

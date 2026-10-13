@@ -118,6 +118,52 @@
                         <p class="px-5 py-6 text-muted">Sin prescripciones. @can('prescribe', $stay)Use "Nueva prescripción" para programar las dosis en el kárdex.@endcan</p>
                     @endforelse
                 </section>
+
+                {{-- What the owner sees in the app --}}
+                <section class="panel overflow-hidden" aria-labelledby="propietario-app">
+                    <div class="border-b border-line px-5 py-4">
+                        <h2 id="propietario-app" class="text-xl font-bold text-ink">Comunicación con el propietario</h2>
+                        <p class="text-sm text-muted">
+                            Lo que se publica aquí aparece en la app PetPulse del propietario.
+                            @if ($this->ownerLinks->isEmpty()) Aún no hay propietarios vinculados a este paciente. @endif
+                        </p>
+                    </div>
+                    @can('informOwner', $stay)
+                        <form wire:submit="saveOwnerStatus" class="flex flex-col gap-3 border-b border-line px-5 py-4 sm:flex-row sm:items-end">
+                            <label class="flex-1">
+                                <span class="text-sm font-semibold text-ink">Estado visible para el propietario</span>
+                                <select wire:model="ownerStatus" class="field mt-1.5">
+                                    <option value="">Sin estado (solo "Hospitalizado")</option>
+                                    @foreach ($ownerStatuses as $st)
+                                        <option value="{{ $st->value }}">{{ $st->label() }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+                            <button type="submit" class="btn-secondary" wire:loading.attr="disabled">Actualizar estado</button>
+                        </form>
+                        <form wire:submit="publishOwnerUpdate" class="border-b border-line px-5 py-4">
+                            <label class="block">
+                                <span class="text-sm font-semibold text-ink">Nuevo parte médico</span>
+                                <textarea wire:model="updateBody" rows="3" maxlength="2000" class="field mt-1.5 @error('updateBody') !border-late @enderror" placeholder="Hoy comió bien y está más activo. Continúa con antibiótico; mañana repetimos exámenes."></textarea>
+                                @error('updateBody') <p class="mt-2 text-sm font-semibold text-late" role="alert">{{ $message }}</p> @enderror
+                            </label>
+                            <div class="mt-3 flex justify-end">
+                                <button type="submit" class="btn-primary !py-2 !text-sm" wire:loading.attr="disabled">Publicar parte</button>
+                            </div>
+                        </form>
+                    @endcan
+                    @if ($stay->owner_status)
+                        <p class="border-b border-line px-5 py-3 text-sm text-muted">El propietario ve: <strong class="text-ink">{{ $stay->owner_status->label() }}</strong> (actualizado {{ $stay->owner_status_updated_at?->setTimezone($timezone)->isoFormat('D MMM, HH:mm') }})</p>
+                    @endif
+                    @forelse ($this->ownerUpdates as $u)
+                        <article class="border-b border-line px-5 py-3 last:border-b-0" wire:key="ou-{{ $u->id }}">
+                            <p class="whitespace-pre-line text-ink">{{ $u->body }}</p>
+                            <p class="pp-num mt-1 text-xs text-muted">{{ $u->author?->name ?? '—' }} · {{ $u->created_at->setTimezone($timezone)->isoFormat('D MMM, HH:mm') }}</p>
+                        </article>
+                    @empty
+                        <p class="px-5 py-4 text-sm text-muted">Sin partes médicos publicados en esta hospitalización.</p>
+                    @endforelse
+                </section>
             @else
                 <section class="panel px-5 py-8 text-center">
                     <p class="text-lg font-bold text-ink">Sin hospitalización activa</p>
@@ -149,7 +195,8 @@
         </div>
 
         {{-- Owner --}}
-        <aside class="panel self-start p-5" aria-labelledby="propietario">
+        <div class="space-y-6 self-start">
+        <aside class="panel p-5" aria-labelledby="propietario">
             <h2 id="propietario" class="text-xl font-bold text-ink">Propietario</h2>
             <dl class="mt-4 space-y-3">
                 <div><dt class="text-sm font-semibold text-muted">Nombre</dt><dd class="text-ink">{{ $patient->owner_name }}</dd></div>
@@ -159,6 +206,47 @@
                 <div><dt class="text-sm font-semibold text-muted">Registrado</dt><dd class="pp-num text-ink">{{ $patient->created_at->setTimezone($timezone)->isoFormat('D MMM YYYY') }}</dd></div>
             </dl>
         </aside>
+
+        <section class="panel p-5" aria-labelledby="acceso-app">
+            <h2 id="acceso-app" class="text-xl font-bold text-ink">App del propietario</h2>
+            <p class="mt-1 text-sm text-muted">El propietario ve la ficha, el estado de la hospitalización, los partes médicos y los medicamentos aplicados.</p>
+
+            @if ($issuedCodeDisplay)
+                <div class="mt-4 rounded-2xl border border-line bg-sunken p-4 text-center" role="status">
+                    <p class="text-sm font-semibold text-muted">Código de vinculación</p>
+                    <p class="pp-num mt-1 select-all text-3xl font-extrabold tracking-widest text-ink">{{ $issuedCodeDisplay }}</p>
+                    <div class="mx-auto mt-3 w-44 rounded-xl bg-white p-2 [&>svg]:h-auto [&>svg]:w-full" aria-label="Código QR de vinculación">{!! $issuedCodeQr !!}</div>
+                    <p class="mt-3 text-xs text-muted">
+                        Un solo uso · vence el {{ \Illuminate\Support\Carbon::parse($issuedCodeExpiresAt)->setTimezone($timezone)->isoFormat('D MMM, HH:mm') }}.
+                        Entréguelo solo al propietario. Generar otro anula este.
+                    </p>
+                </div>
+            @endif
+
+            @can('manageOwnerAccess', $patient)
+                <button type="button" wire:click="issueLinkCode" class="btn-secondary mt-4 w-full" wire:loading.attr="disabled">
+                    {{ $issuedCodeDisplay ? 'Generar otro código' : 'Generar código de vinculación' }}
+                </button>
+            @endcan
+
+            <h3 class="mt-5 text-sm font-semibold text-muted">Con acceso</h3>
+            <ul class="mt-2 divide-y divide-line">
+                @forelse ($this->ownerLinks as $link)
+                    <li class="flex items-center justify-between gap-3 py-2" wire:key="link-{{ $link->id }}">
+                        <div class="min-w-0">
+                            <p class="truncate font-semibold text-ink">{{ $link->owner->name }}</p>
+                            <p class="truncate text-xs text-muted">{{ $link->owner->email }} · desde {{ $link->linked_at->setTimezone($timezone)->isoFormat('D MMM YYYY') }}</p>
+                        </div>
+                        @can('manageOwnerAccess', $patient)
+                            <button type="button" wire:click="revokeOwnerLink({{ $link->id }})" wire:confirm="¿Retirar el acceso de {{ $link->owner->name }} a esta mascota en la app?" class="btn-secondary !min-h-10 !px-3 !py-1.5 !text-sm">Retirar</button>
+                        @endcan
+                    </li>
+                @empty
+                    <li class="py-2 text-sm text-muted">Nadie todavía.</li>
+                @endforelse
+            </ul>
+        </section>
+        </div>
     </div>
 
     {{-- Suspend prescription modal --}}

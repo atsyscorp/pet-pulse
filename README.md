@@ -53,6 +53,7 @@ vendor/bin/pint --test        # code style
 | Prescriptions | `app/Livewire/Hospital/PrescriptionEditor.php`, `app/Services/Hospitalization/{PrescriptionPlan,PrescribeMedicationService,SuspendPrescriptionService}.php`, `app/Models/Prescription.php` |
 | Drug catalog & stock receiving | `app/Livewire/Hospital/{DrugIndex,DrugEditor,DrugShow}.php`, `app/Services/Pharmacy/ReceiveDrugStockService.php` |
 | Realtime (best effort) | `app/Services/Hospitalization/KardexNotifier.php`: every `KardexUpdated` goes out after commit, and a Reverb outage is logged instead of failing the request |
+| Owner app API (v1) | `routes/api.php`, `app/Http/Controllers/Api/V1/Owner/*`, `app/Http/Resources/Owner/*`, `app/Services/OwnerApp/*`; reference in [docs/API-PROPIETARIOS.md](docs/API-PROPIETARIOS.md) |
 | Spanish UI strings | `lang/es/*.php`, `lang/es.json` (validation, auth, pagination) |
 | HTTP API (scanners/mobile) | `POST /hospital/kardex/{schedule}/administer`: `AdministerDoseController` + `AdministerDoseRequest` |
 | Authorization | `app/Policies/KardexSchedulePolicy.php`, `App\Enums\UserRole` |

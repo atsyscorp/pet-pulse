@@ -27,4 +27,12 @@ final class HospitalizationPolicy
             && $user->role->canManageAdmissions()
             && $hospitalization->isActive();
     }
+
+    /** Status and written updates for the owner: clinical staff, during the stay. */
+    public function informOwner(User $user, Hospitalization $hospitalization): bool
+    {
+        return $user->belongsToClinic((int) $hospitalization->clinic_id)
+            && $user->role->canManageAdmissions()
+            && $hospitalization->isActive();
+    }
 }
