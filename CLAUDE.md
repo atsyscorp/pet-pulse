@@ -7,3 +7,4 @@
 - Database: PostgreSQL in every environment except the automated tests (in-memory SQLite).
 - Quantities (doses, stock) are `DECIMAL(10,4)` handled via `App\Support\Pharmacy\Quantity`; never floats.
 - Run `php artisan test` and `vendor/bin/pint --test` before committing.
+- The owner app lives in `mobile/` (Flutter 3.47). Run `flutter analyze` and `flutter test` there before committing changes to it. Its API contract is `docs/API-PROPIETARIOS.md`; change both together.

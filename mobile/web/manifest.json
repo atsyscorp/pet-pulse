@@ -1,0 +1,36 @@
+{
+    "name": "PetPulse",
+    "short_name": "PetPulse",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#120C36",
+    "theme_color": "#120C36",
+    "description": "PetPulse para propietarios: siga la hospitalización de su mascota.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "lang": "es",
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
