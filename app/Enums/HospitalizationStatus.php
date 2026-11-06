@@ -16,4 +16,21 @@ enum HospitalizationStatus: string
     {
         return $this === self::Admitted;
     }
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::Admitted => 'Hospitalizado',
+            self::Discharged => 'Alta médica',
+            self::VoluntaryDischarge => 'Alta voluntaria',
+            self::Transferred => 'Remitido',
+            self::Deceased => 'Fallecido',
+        };
+    }
+
+    /** Outcomes a clinician can choose when closing a stay. */
+    public static function dischargeOptions(): array
+    {
+        return [self::Discharged, self::VoluntaryDischarge, self::Transferred, self::Deceased];
+    }
 }
