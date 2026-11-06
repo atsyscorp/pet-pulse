@@ -28,4 +28,10 @@ final class PatientPolicy
     {
         return $this->view($user, $patient) && $user->role->canManagePatients();
     }
+
+    /** Handing out app codes and revoking access: the whole front desk and ward. */
+    public function manageOwnerAccess(User $user, Patient $patient): bool
+    {
+        return $this->view($user, $patient) && $user->role->canManagePatients();
+    }
 }

@@ -8,6 +8,7 @@ use App\Http\Middleware\IdentifyClinic;
 use App\Models\Drug;
 use App\Models\Hospitalization;
 use App\Models\KardexSchedule;
+use App\Models\Owner;
 use App\Models\Prescription;
 use App\Tenancy\TenantContext;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,8 @@ class AppServiceProvider extends ServiceProvider
             'hospitalization' => Hospitalization::class,
             'drug' => Drug::class,
             'prescription' => Prescription::class,
+            // Sanctum token owners.
+            'owner' => Owner::class,
         ]);
 
         // Surface lazy loading / silently discarded attributes during development.
