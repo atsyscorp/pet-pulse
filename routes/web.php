@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AccessRequestController;
+use App\Http\Controllers\Admin\AdminSessionController;
+use App\Http\Controllers\Admin\PlatformController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Hospital\AdministerDoseController;
 use App\Http\Controllers\LandingController;
@@ -58,6 +60,23 @@ Route::middleware(['auth', 'clinic'])
             ->middleware('throttle:60,1')
             ->name('kardex.administer');
     });
+
+// PetPulse superadministrators: own guard, own login, no tenant.
+Route::prefix('admin')->name('admin.')->group(function (): void {
+    Route::middleware('guest:admin')->group(function (): void {
+        Route::get('/login', [AdminSessionController::class, 'create'])->name('login');
+        Route::post('/login', [AdminSessionController::class, 'store'])->middleware('throttle:10,1');
+    });
+
+    Route::middleware('auth:admin')->group(function (): void {
+        Route::post('/logout', [AdminSessionController::class, 'destroy'])->name('logout');
+        Route::get('/', [PlatformController::class, 'dashboard'])->name('dashboard');
+        Route::get('/propietarios', [PlatformController::class, 'owners'])->name('owners');
+        Route::get('/clinicas', [PlatformController::class, 'clinics'])->name('clinics');
+        Route::get('/personal', [PlatformController::class, 'staff'])->name('staff');
+        Route::get('/solicitudes', [PlatformController::class, 'accessRequests'])->name('access-requests');
+    });
+});
 
 // Local-only impersonation helper for the seeded demo.
 if (app()->environment('local')) {

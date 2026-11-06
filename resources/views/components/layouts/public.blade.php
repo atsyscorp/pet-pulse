@@ -7,6 +7,7 @@
     <title>{{ isset($title) ? $title.' · ' : '' }}PetPulse</title>
     <meta name="description" content="{{ $description ?? 'PetPulse: hospitalización veterinaria con control exacto de cada dosis. Kárdex de enfermería en tiempo real, inventario fraccional y trazabilidad para clínicas en Colombia y LATAM.' }}">
     <meta name="theme-color" content="#f1f5f9">
+    @isset($robots)<meta name="robots" content="{{ $robots }}">@endisset
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="PetPulse">

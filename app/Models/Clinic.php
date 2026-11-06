@@ -43,4 +43,16 @@ class Clinic extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /** @return HasMany<Patient, $this> */
+    public function patients(): HasMany
+    {
+        return $this->hasMany(Patient::class);
+    }
+
+    /** @return HasMany<OwnerPatientLink, $this> */
+    public function ownerLinks(): HasMany
+    {
+        return $this->hasMany(OwnerPatientLink::class);
+    }
 }
