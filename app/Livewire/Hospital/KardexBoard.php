@@ -167,7 +167,7 @@ final class KardexBoard extends Component
 
         return Hospitalization::query()
             ->with([
-                'patient:id,name,species,breed',
+                'patient:id,clinic_id,name,species,breed',
                 'kardexSchedules' => fn (HasMany $q) => $q
                     ->whereBetween('scheduled_at', [$from, $to])
                     ->with([
@@ -252,7 +252,7 @@ final class KardexBoard extends Component
             'administeredAt' => $schedule->administered_at?->setTimezone($this->timezone)->format('H:i'),
             'administeredBy' => $schedule->administeredBy?->name,
             'drug' => $drug->name,
-            'dose' => $dose->format(),
+            'dose' => $dose->display(),
             'unit' => $drug->fraction_unit,
             'route' => $schedule->route->value,
             'routeLabel' => $schedule->route->label(),
@@ -261,11 +261,11 @@ final class KardexBoard extends Component
             'packagesToOpen' => $packagesToOpen,
             'presentation' => $drug->presentation_unit,
             'stockPackages' => $drug->stock_packages,
-            'openBalance' => $openBalance->format(),
+            'openBalance' => $openBalance->display(),
             'patient' => $stay->patient->name,
             'species' => $stay->patient->species,
             'bed' => $stay->bed_label,
-            'weight' => rtrim(rtrim((string) $stay->current_weight_kg, '0'), '.'),
+            'weight' => str_replace('.', ',', rtrim(rtrim((string) $stay->current_weight_kg, '0'), '.')),
             'notes' => $schedule->notes,
         ];
     }

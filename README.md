@@ -50,6 +50,10 @@ vendor/bin/pint --test        # code style
 | Lifecycle observer | `app/Observers/HospitalizationObserver.php` (a discharge cancels pending doses) |
 | Livewire board | `app/Livewire/Hospital/KardexBoard.php`, `resources/views/livewire/hospital/kardex-board.blade.php` |
 | Patients & admissions | `app/Livewire/Hospital/{PatientIndex,PatientEditor,PatientShow,AdmissionEditor}.php`, `app/Livewire/Forms/*`, `app/Services/Hospitalization/{AdmitPatientService,DischargePatientService}.php` |
+| Prescriptions | `app/Livewire/Hospital/PrescriptionEditor.php`, `app/Services/Hospitalization/{PrescriptionPlan,PrescribeMedicationService,SuspendPrescriptionService}.php`, `app/Models/Prescription.php` |
+| Drug catalog & stock receiving | `app/Livewire/Hospital/{DrugIndex,DrugEditor,DrugShow}.php`, `app/Services/Pharmacy/ReceiveDrugStockService.php` |
+| Realtime (best effort) | `app/Services/Hospitalization/KardexNotifier.php`: every `KardexUpdated` goes out after commit, and a Reverb outage is logged instead of failing the request |
+| Spanish UI strings | `lang/es/*.php`, `lang/es.json` (validation, auth, pagination) |
 | HTTP API (scanners/mobile) | `POST /hospital/kardex/{schedule}/administer`: `AdministerDoseController` + `AdministerDoseRequest` |
 | Authorization | `app/Policies/KardexSchedulePolicy.php`, `App\Enums\UserRole` |
 | Domain exceptions | `app/Exceptions/Kardex/*` (rendered as HTTP 409 / Livewire toasts, not reported) |
@@ -148,7 +152,7 @@ clocks never disagree.
 
 ## Next steps (not in this iteration)
 * Omission workflow (`omitted` + mandatory reason) and dose reversal as a compensating ledger entry.
-* Prescription UI (patients and admissions now have screens; the medication plan still needs one), with CRIs/infusions as a separate model.
+* Constant-rate infusions (CRIs) as their own model; prescriptions today cover intermittent doses.
 * PostgreSQL CI job with a parallel-process contention test for `lockForUpdate`.
-* Stock receiving/waste screens (the ledger already supports `package_received`, `waste`, `adjustment`).
+* Waste and adjustment screens (receiving is built; the ledger already supports `waste` and `adjustment`).
 * Authentication scaffolding (Breeze/Fortify) to replace the local-only `/dev/login` helper.

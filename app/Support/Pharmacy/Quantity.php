@@ -121,6 +121,12 @@ final readonly class Quantity implements Stringable
         return (string) $this->value->strippedOfTrailingZeros();
     }
 
+    /** Display with the Latin American decimal comma, e.g. "0,0125", "2,5", "10". */
+    public function display(): string
+    {
+        return str_replace('.', ',', $this->format());
+    }
+
     public function __toString(): string
     {
         return $this->toString();

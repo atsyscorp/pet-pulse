@@ -16,7 +16,6 @@ use App\Models\User;
 use App\Services\Pharmacy\DrugInventoryLedger;
 use App\Support\Pharmacy\Quantity;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Carbon;
 
@@ -45,9 +44,10 @@ use Illuminate\Support\Carbon;
  * administration and one stock deduction.
  *
  * ─── Why broadcast after commit ─────────────────────────────────────────────
- * KardexUpdated implements ShouldDispatchAfterCommit: if this service is ever
- * wrapped by an outer transaction that rolls back, wall displays never see a
- * phantom administration.
+ * KardexNotifier sends KardexUpdated after the outermost commit: if this
+ * service is ever wrapped by an outer transaction that rolls back, wall
+ * displays never see a phantom administration. It also swallows (and logs) a
+ * Reverb outage so a recorded dose is never reported to the nurse as failed.
  */
 final readonly class KardexAdministrationService
 {
@@ -56,7 +56,7 @@ final readonly class KardexAdministrationService
     public function __construct(
         private ConnectionInterface $db,
         private DrugInventoryLedger $ledger,
-        private Dispatcher $events,
+        private KardexNotifier $notifier,
     ) {}
 
     /**
@@ -166,7 +166,7 @@ final readonly class KardexAdministrationService
             $schedule->setRawAttributes($locked->getAttributes(), sync: true);
 
             // 9) Real-time fan-out; deferred until the outermost commit.
-            $this->events->dispatch(KardexUpdated::administered($locked, $drug, $userId));
+            $this->notifier->notify(KardexUpdated::administered($locked, $drug, $userId));
         }, self::TRANSACTION_ATTEMPTS);
     }
 

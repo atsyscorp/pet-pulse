@@ -59,6 +59,65 @@
                         </div>
                     @endcan
                 </section>
+
+                {{-- Medication plan --}}
+                <section class="panel overflow-hidden" aria-labelledby="plan">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+                        <h2 id="plan" class="text-xl font-bold text-ink">Plan de medicación</h2>
+                        @can('prescribe', $stay)
+                            <a href="{{ route('hospital.stays.prescribe', $stay) }}" class="btn-primary !py-2 !text-sm">
+                                <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                                Nueva prescripción
+                            </a>
+                        @endcan
+                    </div>
+                    @forelse ($this->prescriptions as $rx)
+                        <article class="border-b border-line px-5 py-4 last:border-b-0" wire:key="rx-{{ $rx->id }}">
+                            <div class="flex flex-wrap items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <p class="text-lg font-bold text-ink">
+                                        {{ $rx->drug->name }}
+                                        @if ($rx->drug->is_controlled)
+                                            <span class="ml-1 rounded-full bg-sunken px-2 py-0.5 align-middle text-xs font-bold text-ink ring-1 ring-inset ring-edge">Control especial</span>
+                                        @endif
+                                    </p>
+                                    <p class="pp-num text-ink">
+                                        <strong>{{ $rx->dose()->display() }} {{ $rx->drug->fraction_unit }}</strong>
+                                        @if ($rx->dose_per_kg !== null)
+                                            <span class="text-muted">({{ str_replace('.', ',', rtrim(rtrim((string) $rx->dose_per_kg, '0'), '.')) }} {{ $rx->drug->concentration_unit }}/kg)</span>
+                                        @endif
+                                        · {{ $rx->route->value }} · {{ $rx->frequencyLabel() }}
+                                    </p>
+                                    <p class="pp-num mt-1 text-sm text-muted">
+                                        {{ $rx->starts_at->setTimezone($timezone)->isoFormat('D MMM, HH:mm') }}
+                                        @if ($rx->frequency_hours) → {{ $rx->ends_at->setTimezone($timezone)->isoFormat('D MMM, HH:mm') }}@endif
+                                        · {{ $rx->administered_count }}/{{ $rx->doses_planned }} administradas
+                                        · {{ $rx->prescriber?->name ?? '—' }}
+                                    </p>
+                                    @if ($rx->instructions)
+                                        <p class="mt-1 text-sm text-ink">{{ $rx->instructions }}</p>
+                                    @endif
+                                    @if ($rx->status === App\Enums\PrescriptionStatus::Suspended)
+                                        <p class="mt-1 text-sm text-muted">Suspendida {{ $rx->suspended_at?->setTimezone($timezone)->isoFormat('D MMM, HH:mm') }}: {{ $rx->suspension_reason }}</p>
+                                    @endif
+                                </div>
+                                <div class="flex shrink-0 items-center gap-2">
+                                    {{-- Neutral on purpose: green/red/amber are reserved for dose state (DESIGN.md). --}}
+                                    <span @class([
+                                        'rounded-full px-3 py-1 text-xs font-bold',
+                                        'text-ink ring-1 ring-inset ring-ink' => $rx->isActive(),
+                                        'bg-sunken text-muted' => ! $rx->isActive(),
+                                    ])>{{ $rx->status->label() }}</span>
+                                    @can('suspend', $rx)
+                                        <button type="button" wire:click="openSuspend({{ $rx->id }})" class="btn-secondary !min-h-10 !px-3 !py-1.5 !text-sm">Suspender</button>
+                                    @endcan
+                                </div>
+                            </div>
+                        </article>
+                    @empty
+                        <p class="px-5 py-6 text-muted">Sin prescripciones. @can('prescribe', $stay)Use "Nueva prescripción" para programar las dosis en el kárdex.@endcan</p>
+                    @endforelse
+                </section>
             @else
                 <section class="panel px-5 py-8 text-center">
                     <p class="text-lg font-bold text-ink">Sin hospitalización activa</p>
@@ -101,6 +160,26 @@
             </dl>
         </aside>
     </div>
+
+    {{-- Suspend prescription modal --}}
+    @if ($suspendingId)
+        @php($suspending = $this->prescriptions->firstWhere('id', $suspendingId))
+        <div class="fixed inset-0 z-50 flex items-end justify-center bg-ink/60 sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="suspender-titulo" x-data x-trap.noscroll="true" x-on:keydown.escape.window="$wire.set('suspendingId', null)">
+            <form wire:submit="suspend" class="panel w-full max-w-lg rounded-b-none p-6 sm:rounded-b-3xl sm:p-8" x-on:click.outside="$wire.set('suspendingId', null)">
+                <h2 id="suspender-titulo" class="text-2xl font-extrabold text-ink">Suspender prescripción</h2>
+                <p class="mt-1 text-muted">{{ $suspending?->drug->name }} · {{ $suspending?->frequencyLabel() }}. Las dosis pendientes se cancelan; las ya administradas quedan en el registro.</p>
+                <label class="mt-6 block">
+                    <span class="text-sm font-semibold text-ink">Motivo</span>
+                    <textarea wire:model="suspensionReason" rows="3" maxlength="500" autofocus class="field mt-1.5 @error('suspensionReason') !border-late @enderror" placeholder="Cambio de antibiótico según antibiograma"></textarea>
+                    @error('suspensionReason') <p class="mt-2 text-sm font-semibold text-late" role="alert">{{ $message }}</p> @enderror
+                </label>
+                <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <button type="button" wire:click="$set('suspendingId', null)" class="btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn-primary" wire:loading.attr="disabled">Suspender</button>
+                </div>
+            </form>
+        </div>
+    @endif
 
     {{-- Discharge modal --}}
     @if ($showDischarge && $stay)

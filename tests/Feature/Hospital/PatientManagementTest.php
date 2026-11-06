@@ -116,4 +116,12 @@ final class PatientManagementTest extends TestCase
 
         $this->assertSame('Siamés', $patient->fresh()->breed);
     }
+
+    public function test_validation_messages_are_in_spanish(): void
+    {
+        Livewire::actingAs($this->receptionist)->test(PatientEditor::class)
+            ->call('save')
+            ->assertSee('El campo nombre es obligatorio.')
+            ->assertSee('El campo nombre del propietario es obligatorio.');
+    }
 }
